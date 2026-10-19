@@ -1,6 +1,6 @@
 # Gold vs. Stocks — The Safe Haven Experiment
 
-A one-page, static financial data experiment comparing monthly SPY and GLD returns with ordinary least squares (OLS). No custom server and no API key.
+A gold-themed, animated, one-page financial experiment comparing SPY and GLD through OLS, investment growth, volatility, Sharpe ratio, maximum drawdown, and diversification. No custom server and no API key.
 
 ## Publishing to GitHub Pages
 
@@ -35,3 +35,13 @@ Visit `http://localhost:8000`. Opening the HTML file with `file://` does not rel
 ## Data and hosting notes
 
 Yahoo Finance is not an official guaranteed API; usage and availability can change. GitHub Actions performs network access on the server-side *build/refresh step*, not in the static browser page. For personal/classroom demonstration. Chart.js is loaded from a public CDN; for complete offline independence, vendor its JS file.
+
+## Additional finance indicators (v2)
+
+- **Cumulative return:** `last_adjusted_price / first_adjusted_price - 1` over the selected horizon.
+- **Volatility:** sample standard deviation of monthly simple returns, multiplied by `sqrt(12)` (annualized). Assumes zero serial correlation for annualization.
+- **Sharpe ratio:** `(12 × arithmetic mean monthly return − assumed annual risk-free rate) / annualized volatility`. The user-selected risk-free value defaults to **3% for illustration**, not a live Treasury observation.
+- **Maximum drawdown:** worst peak-to-trough decline of hypothetical monthly-end wealth; intramonth drawdowns can be larger.
+- **Diversification label:** qualitative description of absolute historical Pearson correlation (less than 0.3 low; less than 0.7 moderate; otherwise high).
+
+All calculations are backward-looking. Returns use adjusted prices, so hypothetical growth approximates reinvestment of distributions and is not a tax/fee-inclusive result.
