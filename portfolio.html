@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121916">
+  <title>Gold Allocation Lab | Aurum Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" defer></script>
+  <style>
+    :root {
+      --bg: #101815;
+      --panel: #1a2520;
+      --panel2: #202d24;
+      --border: #405042;
+      --gold: #e2bf78;
+      --mint: #78b7ab;
+      --ink: #f4f1e6;
+      --muted: #a8b2a8
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: radial-gradient(ellipse 70% 30% at 75% -10%, #8a65373b, transparent), var(--bg);
+      font-family: 'DM Sans', sans-serif
+    }
+
+    a {
+      color: inherit
+    }
+
+    .wrap {
+      max-width: 1100px;
+      width: calc(100% - 40px);
+      margin: auto
+    }
+
+    header {
+      padding: 21px 0;
+      border-bottom: 1px solid var(--border);
+      background: #17221dc4;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(16px)
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .14em
+    }
+
+    .brand i {
+      display: inline-grid;
+      place-items: center;
+      background: linear-gradient(120deg, #ffe3a5, #a88245);
+      color: #172019;
+      border-radius: 9px;
+      font-size: 21px;
+      font-style: normal;
+      width: 32px;
+      height: 32px;
+      margin-right: 9px
+    }
+
+    .back {
+      font-size: 12px;
+      text-decoration: none;
+      color: var(--gold);
+      border: 1px solid #896c42;
+      padding: 9px 14px;
+      border-radius: 30px
+    }
+
+    .back:hover {
+      background: #8a682c42
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .21em;
+      color: var(--gold);
+      font-weight: 800
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -.04em
+    }
+
+    h1 {
+      font-size: clamp(39px, 6vw, 71px);
+      line-height: 1.09;
+      margin: 15px 0 14px
+    }
+
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(120deg, #fff0b9, #c39546);
+      color: transparent;
+      background-clip: text
+    }
+
+    .hero {
+      padding: 60px 0 33px
+    }
+
+    .hero p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--muted);
+      max-width: 730px
+    }
+
+    .panel {
+      background: linear-gradient(145deg, #1e2a23, #19231f);
+      border: 1px solid #3c483d;
+      border-radius: 17px;
+      box-shadow: 0 20px 44px #0002
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      padding: 27px
+    }
+
+    .control-label {
+      font-weight: 700;
+      font-size: 13px;
+      color: #e7dcc3
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .alloc-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px
+    }
+
+    .big-weight {
+      font-family: 'Space Grotesk';
+      font-size: 34px;
+      color: var(--gold);
+      font-weight: 700
+    }
+
+    input[type=range] {
+      width: 100%;
+      margin: 20px 0 10px;
+      accent-color: #e4ba6c;
+      cursor: pointer
+    }
+
+    .track-legend {
+      display: flex;
+      justify-content: space-between;
+      color: #b2bcae;
+      font-size: 12px
+    }
+
+    .track-legend b {
+      color: var(--mint)
+    }
+
+    .right-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 13px
+    }
+
+    .button-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      cursor: pointer;
+      background: #121e18;
+      color: #c2c9be;
+      border: 1px solid #455342;
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .chip.active,
+    .chip:hover {
+      background: #69532b;
+      color: #fff1cf;
+      border-color: #ac874a
+    }
+
+    .num {
+      background: #101a15;
+      color: #e9d3a0;
+      border: 1px solid #465442;
+      border-radius: 8px;
+      padding: 8px;
+      width: 75px;
+      font: inherit;
+      font-size: 13px
+    }
+
+    button {
+      font: inherit
+    }
+
+    .action {
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(120deg, #f3d796, #b9914a);
+      color: #19241c;
+      padding: 11px 16px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer
+    }
+
+    .action:hover {
+      filter: brightness(1.11)
+    }
+
+    .action:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+      margin: 18px 0
+    }
+
+    .stat {
+      padding: 18px 17px
+    }
+
+    .stat small {
+      display: block;
+      color: #a5b2a7;
+      font-size: 11px
+    }
+
+    .stat strong {
+      display: block;
+      font-family: 'Space Grotesk';
+      font-size: 26px;
+      margin: 9px 0 5px;
+      color: #ecd098
+    }
+
+    .stat .detail {
+      font-size: 11px;
+      color: #91a99d
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px
+    }
+
+    .chart-panel {
+      padding: 24px
+    }
+
+    .chart-title {
+      font-size: 21px;
+      font-weight: 700
+    }
+
+    .plot {
+      position: relative;
+      height: 310px;
+      margin-top: 18px
+    }
+
+    .plot.short {
+      height: 300px
+    }
+
+    .takeaway {
+      padding: 24px;
+      line-height: 1.7
+    }
+
+    .takeaway p {
+      font-size: 13px;
+      color: #c4cabc
+    }
+
+    .takeaway .answer {
+      background: #3b3423;
+      border: 1px solid #756037;
+      border-radius: 13px;
+      padding: 17px;
+      margin-top: 19px;
+      color: #f0deb4;
+      font-size: 13px
+    }
+
+    .range-box {
+      font-size: 12px;
+      color: #c0cbbd;
+      margin-top: 10px
+    }
+
+    .section {
+      margin: 20px 0
+    }
+
+    .subgrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px
+    }
+
+    .story {
+      padding: 26px
+    }
+
+    .story h3 {
+      margin-top: 0
+    }
+
+    .story p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #b5bdb3
+    }
+
+    .legend {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      margin-right: 6px
+    }
+
+    .gold {
+      background: var(--gold)
+    }
+
+    .mint {
+      background: var(--mint)
+    }
+
+    .footer {
+      padding: 30px 0 50px;
+      font-size: 11px;
+      color: #91a196;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      background: #1d2924f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 2;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+      line-height: 1.6;
+      font-size: 13px;
+      color: #e7d4a8
+    }
+
+    .pulse {
+      width: 25px;
+      height: 25px;
+      border: 3px solid #6d5a38;
+      border-top-color: #f4d797;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 12px
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .bar {
+      height: 13px;
+      border-radius: 7px;
+      overflow: hidden;
+      display: flex;
+      background: #24332c;
+      margin-top: 11px
+    }
+
+    .bar span:first-child {
+      background: var(--gold)
+    }
+
+    .bar span:last-child {
+      background: var(--mint)
+    }
+
+    .fade {
+      animation: up .8s both
+    }
+
+    @keyframes up {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @media(max-width:820px) {
+
+      .controls,
+      .grid,
+      .subgrid {
+        grid-template-columns: 1fr
+      }
+
+      .summary {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .hero {
+        padding-top: 38px
+      }
+    }
+
+    @media(max-width:480px) {
+      .summary {
+        gap: 8px
+      }
+
+      .stat {
+        padding: 12px
+      }
+
+      .stat strong {
+        font-size: 21px
+      }
+
+      .chart-panel {
+        padding: 15px
+      }
+
+      .controls {
+        padding: 18px
+      }
+
+      .brand {
+        font-size: 10px
+      }
+
+      .wrap {
+        width: calc(100% - 25px)
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand"><i>✦</i>AURUM LAB <span style="font-weight:400;color:#9caa9d"> / ALLOCATION</span></div><a
+        class="back" href="index.html">← Back to Gold Study</a>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero fade">
+      <div class="eyebrow">THE PROFESSOR'S EXPERIMENT · PORTFOLIO THEORY</div>
+      <h1>What if your portfolio<br>had <em>a little more gold?</em></h1>
+      <p>Gold doesn't need to beat stocks to have a purpose. Slide the allocation, compare risk with return, and
+        discover whether diversification improved the <b>historical</b> outcome. All calculations use the same verified
+        SPY / GLD data as the main study.</p>
+    </section>
+    <section class="panel controls fade">
+      <div>
+        <div class="alloc-head"><span class="control-label">Allocate your $10,000 investment</span><span
+            class="big-weight"><span id="weightLabel">30</span>% GLD</span></div><input id="weight" type="range" min="0"
+          max="100" step="5" value="30" disabled aria-label="Percent allocated to gold">
+        <div class="track-legend"><span>● Gold (GLD)</span><span><b>●</b> Stocks (SPY): <span
+              id="spyWeight">70</span>%</span></div>
+        <div class="bar"><span id="goldBar" style="width:30%"></span><span id="stockBar" style="width:70%"></span></div>
+        <div class="muted" style="margin-top:10px">Assumes monthly rebalancing, no transaction costs or taxes.</div>
+      </div>
+      <div class="right-controls">
+        <div class="control-label">Historical period</div>
+        <div class="button-group" id="periodButtons"><button class="chip" data-months="12">1 year</button><button
+            class="chip active" data-months="36">3 years</button><button class="chip" data-months="60">5 years</button>
+        </div><label class="control-label" for="riskFree">Assumed risk-free rate (% annual) <input class="num"
+            id="riskFree" type="number" value="3" min="-5" max="20" step="0.25"></label><button id="optimal"
+          class="action" disabled>✦ Find best historical Sharpe</button>
+      </div>
+    </section>
+    <section class="summary">
+      <article class="panel stat"><small>Annualized arithmetic return</small><strong id="annReturn">—</strong><span
+          class="detail">Historical average × 12</span></article>
+      <article class="panel stat"><small>Annualized volatility</small><strong id="vol">—</strong><span
+          class="detail">Monthly σ × √12</span></article>
+      <article class="panel stat"><small>Sharpe ratio</small><strong id="sharpe">—</strong><span class="detail">Return
+          minus assumed rᶠ / σ</span></article>
+      <article class="panel stat"><small>Max monthly drawdown</small><strong id="drawdown">—</strong><span
+          class="detail">Largest sampled peak-to-trough loss</span></article>
+    </section>
+    <section class="grid">
+      <article class="panel chart-panel">
+        <div class="chart-title">The $10,000 question</div>
+        <div class="muted">What would the selected portfolio have grown to, against 100% stocks and 100% gold?</div>
+        <div class="plot"><canvas id="growth" aria-label="Historical portfolio wealth chart"></canvas>
+          <div class="loading" id="loading">
+            <div class="pulse"></div><span id="loadingText">Loading actual SPY and GLD prices…</span>
+          </div>
+        </div>
+        <div class="range-box">— <span style="color:var(--gold)">Selected mix</span> · <span
+            style="color:var(--mint)">SPY only</span> · <span style="color:#b6a4de">GLD only</span></div>
+      </article>
+      <aside class="panel takeaway">
+        <div class="eyebrow">WHAT CHANGED?</div>
+        <h2>Would you take this trade?</h2>
+        <p id="story">Loading monthly returns…</p>
+        <div class="answer" id="answer">Try changing the gold allocation. The results will update from actual historical
+          returns.</div>
+        <div class="muted" style="margin-top:16px">A backward-looking best allocation is not a forecast, and no
+          weighting guarantees safety.</div>
+      </aside>
+    </section>
+    <section class="subgrid section">
+      <article class="panel chart-panel">
+        <div class="eyebrow">MARKOWITZ · AN INTERACTIVE LOOK</div>
+        <h2 style="margin:9px 0 4px">Risk vs. Return</h2>
+        <div class="muted">101 portfolios (0–100% GLD in 1% steps). The larger point is your selected allocation.</div>
+        <div class="plot short"><canvas id="frontier"
+            aria-label="Historical portfolio risk return combinations"></canvas></div>
+      </article>
+      <article class="panel story">
+        <div class="eyebrow">A CLASSROOM THOUGHT EXPERIMENT</div>
+        <h2>Does less risk mean less return?</h2>
+        <p>Two assets can rise independently. Combining them sometimes lowers volatility without proportionally reducing
+          expected returns. But the precise tradeoff depends on historical correlation.</p>
+        <p><b style="color:#ecd091">Correlation matters:</b> Portfolio variance includes both individual variances and
+          their covariance. Changing weight changes portfolio volatility in a non-linear way.</p>
+        <p><b style="color:#ecd091">Sharpe matters:</b> We compare excess arithmetic returns per unit of volatility.
+          Choose a time horizon and see if the historical best mix stays the same.</p>
+        <p><b style="color:#ecd091">Watch the assumptions:</b> Returns and volatility are computed from monthly
+          historical data. They are not known future expectations.</p><button class="action" id="reset" disabled>↺ Try
+          50 / 50 allocation</button>
+      </article>
+    </section>
+    <footer class="footer"><span>✦ AURUM LAB · Based on monthly adjusted ETF prices · Education, not investment
+        advice.</span><span id="dataStamp">Awaiting historical data</span></footer>
+  </main>
+  <script>
+    (() => {
+      'use strict'; const $ = id => document.getElementById(id); let prices = [], months = 36, weight = .30, growthChart, frontierChart, ready = false;
+      const fmt = (n, d = 1) => Number.isFinite(n) ? n.toFixed(d) : '—'; const per = n => Number.isFinite(n) ? `${n < 0 ? '' : '+'}${fmt(n * 100)}%` : '—'; const money = n => Number.isFinite(n) ? '$' + Math.round(n).toLocaleString('en-US') : '—'; const mlabel = d => new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: 'UTC' });
+      function calc(w, rows, rf) { const ret = rows.map(p => w * p.gld + (1 - w) * p.spy), mean = ret.reduce((a, b) => a + b, 0) / ret.length, v = ret.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, ret.length - 1), vol = Math.sqrt(v * 12), ar = mean * 12, sh = vol > 1e-10 ? (ar - rf) / vol : NaN; let value = 10000, peak = value, draw = 0; const path = [value]; for (const r of ret) { value *= (1 + r); peak = Math.max(peak, value); draw = Math.min(draw, value / peak - 1); path.push(value); } return { ar, vol, sh, draw, path }; }
+      const colors = { text: '#a9b8ad', grid: '#344339', tip: '#13201a' };
+      function lineOptions() { return { responsive: true, maintainAspectRatio: false, animation: { duration: 500 }, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { backgroundColor: colors.tip, callbacks: { label: c => c.dataset.label + ': ' + money(c.parsed.y) } } }, scales: { x: { ticks: { maxTicksLimit: 7, color: colors.text }, grid: { display: false } }, y: { ticks: { color: colors.text, callback: v => '$' + Math.round(v / 1000) + 'k' }, grid: { color: colors.grid } } } }; }
+      function render() {
+        if (!ready) return; const tail = prices.slice(-(months + 1)); const rows = tail.slice(1).map((p, i) => ({ spy: p.spy / tail[i].spy - 1, gld: p.gld / tail[i].gld - 1 })); const rf = Number($('riskFree').value) / 100; if (!Number.isFinite(rf)) return; const c = calc(weight, rows, rf), spy = calc(0, rows, rf), gld = calc(1, rows, rf); $('weightLabel').textContent = Math.round(weight * 100); $('spyWeight').textContent = Math.round((1 - weight) * 100); $('goldBar').style.width = weight * 100 + '%'; $('stockBar').style.width = (1 - weight) * 100 + '%'; $('annReturn').textContent = per(c.ar); $('vol').textContent = fmt(c.vol * 100) + '%'; $('sharpe').textContent = fmt(c.sh, 2); $('drawdown').textContent = per(c.draw); $('story').textContent = `Over ${rows.length} monthly returns, your ${Math.round(weight * 100)}% gold / ${Math.round((1 - weight) * 100)}% stock portfolio finishes at ${money(c.path.at(-1))}. SPY alone finishes at ${money(spy.path.at(-1))}, while GLD alone finishes at ${money(gld.path.at(-1))}.`;
+        const weights = Array.from({ length: 101 }, (_, i) => i / 100), all = weights.map(w => ({ weight: w, ...calc(w, rows, rf) })), safe = all.reduce((a, b) => b.vol < a.vol ? b : a), best = all.filter(x => Number.isFinite(x.sh)).reduce((a, b) => !a || b.sh > a.sh ? b : a, null); $('answer').textContent = `Historical minimum-volatility mix: ${Math.round(safe.weight * 100)}% gold (${fmt(safe.vol * 100)}% annualized volatility). Highest historical Sharpe: ${best ? Math.round(best.weight * 100) + '% gold (Sharpe ' + fmt(best.sh, 2) + ')' : 'not defined'}. Neither is a future recommendation.`;
+        const labels = tail.map(p => mlabel(p.date)), data = [['Selected mix', c.path, '#e2bf78'], ['100% SPY', spy.path, '#78b7ab'], ['100% GLD', gld.path, '#b6a4de']].map(([label, values, color]) => ({ label, data: values, borderColor: color, pointRadius: 0, pointHoverRadius: 4, borderWidth: label === 'Selected mix' ? 3 : 1.8, tension: .2 })); if (growthChart) growthChart.destroy(); growthChart = new Chart($('growth'), { type: 'line', data: { labels, datasets: data }, options: lineOptions() });
+        const front = all.map(q => ({ x: q.vol * 100, y: q.ar * 100 })); const frontOptions = { responsive: true, maintainAspectRatio: false, animation: { duration: 450 }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => { const v = c.raw; return `${Math.round(v.weight * 100)}% gold · return ${fmt(v.y)}% · volatility ${fmt(v.x)}%` } } } }, scales: { x: { type: 'linear', title: { display: true, text: 'Annualized volatility (%)', color: colors.text }, ticks: { color: colors.text }, grid: { color: colors.grid } }, y: { type: 'linear', title: { display: true, text: 'Annualized return (%)', color: colors.text }, ticks: { color: colors.text }, grid: { color: colors.grid } } } }; if (frontierChart) frontierChart.destroy(); frontierChart = new Chart($('frontier'), { type: 'scatter', data: { datasets: [{ label: 'Possible mix', data: front.map((q, i) => ({ ...q, weight: weights[i] })), pointRadius: 3, backgroundColor: '#907d4caa' }, { label: 'Selected mix', data: [{ x: c.vol * 100, y: c.ar * 100, weight }], pointRadius: 9, pointHoverRadius: 11, backgroundColor: '#f1cc79', borderColor: '#fff4cb', borderWidth: 2 }] }, options: frontOptions });
+      }
+      function setWeight(w) { weight = Math.max(0, Math.min(1, w)); $('weight').value = Math.round(weight * 100); render(); }
+      $('weight').addEventListener('input', e => setWeight(Number(e.target.value) / 100)); $('riskFree').addEventListener('input', render); document.querySelectorAll('[data-months]').forEach(b => b.addEventListener('click', () => { months = Number(b.dataset.months); document.querySelectorAll('[data-months]').forEach(x => x.classList.toggle('active', x === b)); render(); })); $('reset').addEventListener('click', () => setWeight(.5)); $('optimal').addEventListener('click', () => { if (!ready) return; const t = prices.slice(-(months + 1)), rows = t.slice(1).map((p, i) => ({ spy: p.spy / t[i].spy - 1, gld: p.gld / t[i].gld - 1 })), rf = Number($('riskFree').value) / 100; if (!Number.isFinite(rf)) return; const all = Array.from({ length: 101 }, (_, i) => ({ w: i / 100, ...calc(i / 100, rows, rf) })).filter(x => Number.isFinite(x.sh)); if (all.length) setWeight(all.reduce((a, b) => a.sh > b.sh ? a : b).w); });
+      async function load() { try { if (typeof Chart === 'undefined') throw Error('Chart.js unavailable. Check your internet connection.'); const res = await fetch('./data.json', { cache: 'no-store' }); if (!res.ok) throw Error('data.json not found. Run the GitHub Actions workflow to fetch the real market prices.'); const j = await res.json(); if (!Array.isArray(j.prices)) throw Error('Unexpected data structure.'); prices = j.prices.filter(p => typeof p.date === 'string' && Number.isFinite(p.spy) && Number.isFinite(p.gld) && p.spy > 0 && p.gld > 0).sort((a, b) => a.date.localeCompare(b.date)); if (prices.length < 61) throw Error('Need 61+ verified aligned monthly closes; received ' + prices.length + '.'); ready = true; $('weight').disabled = false; $('optimal').disabled = false; $('reset').disabled = false; $('loading').style.display = 'none'; $('dataStamp').textContent = 'Through ' + prices.at(-1).date + ' · Refreshed ' + (j.fetched_at || 'unknown').slice(0, 10); render(); } catch (e) { $('loading').querySelector('.pulse').style.display = 'none'; $('loadingText').textContent = e.message; console.error(e); } } window.addEventListener('load', load);
+    })();
+  </script>
+</body>
+
+</html>

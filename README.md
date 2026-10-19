@@ -45,3 +45,8 @@ Yahoo Finance is not an official guaranteed API; usage and availability can chan
 - **Diversification label:** qualitative description of absolute historical Pearson correlation (less than 0.3 low; less than 0.7 moderate; otherwise high).
 
 All calculations are backward-looking. Returns use adjusted prices, so hypothetical growth approximates reinvestment of distributions and is not a tax/fee-inclusive result.
+
+
+## Allocation Lab (new subpage)
+
+Open `portfolio.html` through the navigation link on the homepage. It uses the **same** `data.json` (no additional API credentials or workflow changes), with interactive SPY/GLD weights, historical monthly-rebalanced growth, annualized return/volatility, a risk–return plot, max drawdown and Sharpe ratio. The "best Sharpe" weight is backward-looking and calculated on a 1% grid; it is not a forecast. Risk-free rate is an editable assumption, not a live Treasury quote. Requires 61+ verified aligned monthly prices; first GitHub Actions refresh must succeed.
