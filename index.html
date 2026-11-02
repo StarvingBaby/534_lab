@@ -1087,26 +1087,29 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="site.css">
 </head>
 
 <body>
-  <header>
-    <div class="wrap nav">
-      <div class="logo">
-        <div class="mark">✦</div> AURUM LAB <span style="color:#a3b3a6;font-weight:400">/ GOLD STUDY</span>
+  <header class="site-header">
+    <nav class="wrap site-container site-nav" aria-label="Main navigation">
+      <a class="site-brand" href="index.html"><span class="site-mark" aria-hidden="true">✦</span>AURUM LAB</a>
+      <div class="site-links">
+        <a class="site-link" href="index.html" aria-current="page">Gold Study</a>
+        <a class="site-link" href="portfolio.html">Allocation Lab</a>
+        <a class="site-link" href="bonds.html">Bond–Gold Puzzle</a>
       </div>
-      <div class="nav-right"><a class="lab-link" href="bonds.html">Bond–Gold Puzzle ↗</a><a class="lab-link" href="portfolio.html">✦ Allocation Lab ↗</a><span class="dot"
-          id="statusDot"></span><span id="dataStatus">Checking historical data…</span></div>
-    </div>
+    </nav>
   </header>
-  <main class="wrap">
-    <div class="fade">
+  <main class="wrap site-container site-main">
+    <div class="fade site-hero">
       <div class="eyebrow">A STUDY IN RISK, RETURN &amp; RESILIENCE <span class="gold-star">✦</span></div>
       <h1>Does gold really <span class="highlight">shine</span><br>when stocks fall?</h1>
       <div class="intro">Follow the relationship between equities and gold through real historical returns. Reveal the
         regression, investigate down markets, and compare the reward for the risk.</div><span class="pill">SPY <span
             class="tiny-cross">×</span> GLD <span class="pill-muted">/ THE SAFE HAVEN EXPERIMENT</span></span>
       <p><a class="lab-link" href="bonds.html">Explore the Bond–Gold Puzzle: duration, term premium &amp; gold →</a></p>
+      <div class="site-status"><span class="dot" id="statusDot" aria-hidden="true"></span><span id="dataStatus" role="status">Checking historical data…</span></div>
     </div>
     <section class="panel controls fade">
       <div class="control-group"><span class="label">Time horizon</span>

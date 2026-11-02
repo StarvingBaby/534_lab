@@ -1,0 +1,201 @@
+/* Shared Aurum shell. Keep navigation, gutters and hero spacing in one place. */
+:root {
+  --site-gold: #e2bd72;
+  --site-text: #f2eee3;
+  --site-muted: #a3b3a6;
+  --site-border: #52604450;
+}
+
+body {
+  font-family: 'DM Sans', Arial, sans-serif;
+  background: radial-gradient(ellipse 72% 22% at 70% 0%, #5e512c55, transparent),
+    linear-gradient(#101916, #121b18);
+}
+
+.site-container {
+  width: min(1100px, calc(100% - 48px));
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+.site-header {
+  position: relative;
+  top: auto;
+  z-index: 10;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--site-border);
+  background: #131c19b9;
+  backdrop-filter: blur(12px);
+}
+
+.site-header .site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  min-height: 0;
+  padding-block: 0 !important;
+}
+
+.site-header .site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+  color: var(--site-text);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1;
+}
+
+.site-header .site-mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f8d995, #9c7133);
+  box-shadow: 0 0 26px #d1a85842;
+  color: #17201a;
+  font-size: 21px;
+  letter-spacing: 0;
+}
+
+.site-header .site-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.site-header .site-link {
+  display: block;
+  padding: 9px 14px;
+  border: 1px solid transparent;
+  border-radius: 30px;
+  color: var(--site-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .18s, background .18s, border-color .18s;
+}
+
+.site-header .site-link:hover {
+  color: var(--site-text);
+  background: #e2bd7210;
+}
+
+.site-header .site-link[aria-current="page"] {
+  color: var(--site-gold);
+  border-color: #896c42;
+  background: #42392166;
+}
+
+.site-header a:focus-visible {
+  outline: 2px solid var(--site-gold);
+  outline-offset: 4px;
+}
+
+.site-main {
+  padding-top: 56px;
+}
+
+.site-main > .site-hero {
+  padding: 0;
+  margin: 0 0 36px;
+}
+
+.site-hero .eyebrow {
+  margin: 0;
+  color: #d2b573;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: .19em;
+}
+
+.site-hero h1 {
+  font-family: 'Space Grotesk', 'DM Sans', Arial, sans-serif;
+  font-size: clamp(42px, 6vw, 78px);
+  font-weight: 700;
+  line-height: 1.09;
+  letter-spacing: -.06em;
+  margin: 19px 0 20px;
+}
+
+.site-hero h1 em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  background: linear-gradient(120deg, #fff1b6, #d1a65b 65%, #aa7d3d);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.site-hero .intro {
+  color: #a6afa6;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 730px;
+}
+
+.site-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  color: var(--site-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .site-container {
+    width: calc(100% - 40px);
+    padding-inline: 0;
+  }
+
+  .site-header {
+    padding: 18px 0;
+  }
+
+  .site-header .site-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .site-header .site-links {
+    gap: 4px;
+    width: 100%;
+  }
+
+  .site-header .site-link {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .site-main {
+    padding-top: 36px;
+  }
+
+  .site-main > .site-hero {
+    margin-bottom: 28px;
+  }
+
+  .site-status #dataStatus {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header .site-link {
+    transition: none;
+  }
+}
