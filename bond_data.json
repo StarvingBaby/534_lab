@@ -1,0 +1,771 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-02T18:42:16+00:00",
+  "last_observation_date": "2026-09-30",
+  "frequency": "Completed calendar months; last available observation; inner join on month",
+  "sources": {
+    "acm": {
+      "url": "https://www.newyorkfed.org/medialibrary/media/research/data_indicators/ACMTermPremium.xls",
+      "sheet": "ACM Monthly",
+      "columns": [
+        "DATE",
+        "ACMTP10"
+      ]
+    },
+    "yield": {
+      "url": "https://home.treasury.gov/resource-center-data-chart-center/interest-rates",
+      "urls": [
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2020",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2021",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2022",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2023",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2024",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2025",
+        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2026"
+      ],
+      "name": "U.S. Treasury daily 10-year par yield",
+      "columns": [
+        "NEW_DATE",
+        "BC_10YEAR"
+      ],
+      "fallback_reason": "Download failed after 3 attempts: https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2004-01-01: The read operation timed out",
+      "note": "Official Treasury alternative to FRED DGS10; not a FRED download. No mixing of providers."
+    },
+    "gold": {
+      "file": "data.json",
+      "source": "Yahoo Finance via yfinance",
+      "fetched_at": "2026-11-02T18:42:16+00:00"
+    }
+  },
+  "definitions": {
+    "acm_term_premium_pct": "NY Fed ACM estimated 10-year term premium, percent annualized",
+    "modified_duration_years": "Hypothetical fresh 10-year semiannual par Treasury; years",
+    "gld_adjusted_close_usd": "GLD ETF adjusted close, USD; not spot gold"
+  },
+  "assumptions": [
+    "Face 100; 20 half-year cash flows; annual coupon equals selected 10-year yield / 100.",
+    "Reset maturity to 10 years each month; no aging CUSIP.",
+    "No forward filling. Source-specific endpoint dates may differ within a month.",
+    "Partial current month excluded. ACM estimates may be revised."
+  ],
+  "selection_rule": "Largest absolute ACM change across all consecutive six-calendar-month windows; earliest tie; GLD return not used.",
+  "default_window": {
+    "start_month": "2023-04",
+    "end_month": "2023-10",
+    "candidate_count": 65,
+    "term_premium_change_bps": 114.40681820553817,
+    "gld_return_pct": -0.38419913419913687
+  },
+  "observations": [
+    {
+      "month": "2020-11",
+      "acm_date": "2020-11-30",
+      "treasury_yield_date": "2020-11-30",
+      "acm_term_premium_pct": -0.9725552906780222,
+      "treasury_10y_yield_pct": 0.84,
+      "modified_duration_years": 9.572261274409335,
+      "gld_price_date": "2020-11-30",
+      "gld_adjusted_close_usd": 166.67
+    },
+    {
+      "month": "2020-12",
+      "acm_date": "2020-12-31",
+      "treasury_yield_date": "2020-12-31",
+      "acm_term_premium_pct": -0.8173741897020326,
+      "treasury_10y_yield_pct": 0.93,
+      "modified_duration_years": 9.527963910437105,
+      "gld_price_date": "2020-12-31",
+      "gld_adjusted_close_usd": 178.36
+    },
+    {
+      "month": "2021-01",
+      "acm_date": "2021-01-29",
+      "treasury_yield_date": "2021-01-29",
+      "acm_term_premium_pct": -0.5366312852849846,
+      "treasury_10y_yield_pct": 1.11,
+      "modified_duration_years": 9.44023073363666,
+      "gld_price_date": "2021-01-29",
+      "gld_adjusted_close_usd": 172.61
+    },
+    {
+      "month": "2021-02",
+      "acm_date": "2021-02-26",
+      "treasury_yield_date": "2021-02-26",
+      "acm_term_premium_pct": -0.11540886121421745,
+      "treasury_10y_yield_pct": 1.44,
+      "modified_duration_years": 9.282319688160598,
+      "gld_price_date": "2021-02-26",
+      "gld_adjusted_close_usd": 161.81
+    },
+    {
+      "month": "2021-03",
+      "acm_date": "2021-03-31",
+      "treasury_yield_date": "2021-03-31",
+      "acm_term_premium_pct": 0.2893838124123409,
+      "treasury_10y_yield_pct": 1.74,
+      "modified_duration_years": 9.141983255192866,
+      "gld_price_date": "2021-03-31",
+      "gld_adjusted_close_usd": 159.96001
+    },
+    {
+      "month": "2021-04",
+      "acm_date": "2021-04-30",
+      "treasury_yield_date": "2021-04-30",
+      "acm_term_premium_pct": 0.15648238029084327,
+      "treasury_10y_yield_pct": 1.65,
+      "modified_duration_years": 9.183767181212529,
+      "gld_price_date": "2021-04-30",
+      "gld_adjusted_close_usd": 165.66
+    },
+    {
+      "month": "2021-05",
+      "acm_date": "2021-05-28",
+      "treasury_yield_date": "2021-05-28",
+      "acm_term_premium_pct": 0.1272020734784891,
+      "treasury_10y_yield_pct": 1.58,
+      "modified_duration_years": 9.216452899677176,
+      "gld_price_date": "2021-05-28",
+      "gld_adjusted_close_usd": 178.38
+    },
+    {
+      "month": "2021-06",
+      "acm_date": "2021-06-30",
+      "treasury_yield_date": "2021-06-30",
+      "acm_term_premium_pct": -0.27613057310413747,
+      "treasury_10y_yield_pct": 1.45,
+      "modified_duration_years": 9.277592889902381,
+      "gld_price_date": "2021-06-30",
+      "gld_adjusted_close_usd": 165.63
+    },
+    {
+      "month": "2021-07",
+      "acm_date": "2021-07-30",
+      "treasury_yield_date": "2021-07-30",
+      "acm_term_premium_pct": -0.49722628737569274,
+      "treasury_10y_yield_pct": 1.24,
+      "modified_duration_years": 9.377574212511737,
+      "gld_price_date": "2021-07-30",
+      "gld_adjusted_close_usd": 169.82001
+    },
+    {
+      "month": "2021-08",
+      "acm_date": "2021-08-31",
+      "treasury_yield_date": "2021-08-31",
+      "acm_term_premium_pct": -0.49213563149326345,
+      "treasury_10y_yield_pct": 1.3,
+      "modified_duration_years": 9.34885353079531,
+      "gld_price_date": "2021-08-31",
+      "gld_adjusted_close_usd": 169.69
+    },
+    {
+      "month": "2021-09",
+      "acm_date": "2021-09-30",
+      "treasury_yield_date": "2021-09-30",
+      "acm_term_premium_pct": -0.31544585494030564,
+      "treasury_10y_yield_pct": 1.52,
+      "modified_duration_years": 9.244600351639658,
+      "gld_price_date": "2021-09-30",
+      "gld_adjusted_close_usd": 164.22
+    },
+    {
+      "month": "2021-10",
+      "acm_date": "2021-10-29",
+      "treasury_yield_date": "2021-10-29",
+      "acm_term_premium_pct": -0.4830208095913282,
+      "treasury_10y_yield_pct": 1.55,
+      "modified_duration_years": 9.230511453352632,
+      "gld_price_date": "2021-10-29",
+      "gld_adjusted_close_usd": 166.64999
+    },
+    {
+      "month": "2021-11",
+      "acm_date": "2021-11-30",
+      "treasury_yield_date": "2021-11-30",
+      "acm_term_premium_pct": -0.7249140665402936,
+      "treasury_10y_yield_pct": 1.43,
+      "modified_duration_years": 9.287049889711705,
+      "gld_price_date": "2021-11-30",
+      "gld_adjusted_close_usd": 165.5
+    },
+    {
+      "month": "2021-12",
+      "acm_date": "2021-12-31",
+      "treasury_yield_date": "2021-12-31",
+      "acm_term_premium_pct": -0.6825625538038951,
+      "treasury_10y_yield_pct": 1.52,
+      "modified_duration_years": 9.244600351639658,
+      "gld_price_date": "2021-12-31",
+      "gld_adjusted_close_usd": 170.96001
+    },
+    {
+      "month": "2022-01",
+      "acm_date": "2022-01-31",
+      "treasury_yield_date": "2022-01-31",
+      "acm_term_premium_pct": -0.6611473580636475,
+      "treasury_10y_yield_pct": 1.79,
+      "modified_duration_years": 9.11888621380584,
+      "gld_price_date": "2022-01-31",
+      "gld_adjusted_close_usd": 168.09
+    },
+    {
+      "month": "2022-02",
+      "acm_date": "2022-02-28",
+      "treasury_yield_date": "2022-02-28",
+      "acm_term_premium_pct": -0.7967476862437632,
+      "treasury_10y_yield_pct": 1.83,
+      "modified_duration_years": 9.100468063385831,
+      "gld_price_date": "2022-02-28",
+      "gld_adjusted_close_usd": 178.38
+    },
+    {
+      "month": "2022-03",
+      "acm_date": "2022-03-31",
+      "treasury_yield_date": "2022-03-31",
+      "acm_term_premium_pct": -0.8630458073442595,
+      "treasury_10y_yield_pct": 2.32,
+      "modified_duration_years": 8.879067302565327,
+      "gld_price_date": "2022-03-31",
+      "gld_adjusted_close_usd": 180.64999
+    },
+    {
+      "month": "2022-04",
+      "acm_date": "2022-04-29",
+      "treasury_yield_date": "2022-04-29",
+      "acm_term_premium_pct": -0.3952661352096447,
+      "treasury_10y_yield_pct": 2.89,
+      "modified_duration_years": 8.631042912219241,
+      "gld_price_date": "2022-04-29",
+      "gld_adjusted_close_usd": 176.91
+    },
+    {
+      "month": "2022-05",
+      "acm_date": "2022-05-31",
+      "treasury_yield_date": "2022-05-31",
+      "acm_term_premium_pct": -0.3863130435295852,
+      "treasury_10y_yield_pct": 2.85,
+      "modified_duration_years": 8.648123440190146,
+      "gld_price_date": "2022-05-31",
+      "gld_adjusted_close_usd": 171.14
+    },
+    {
+      "month": "2022-06",
+      "acm_date": "2022-06-30",
+      "treasury_yield_date": "2022-06-30",
+      "acm_term_premium_pct": -0.3480276396779005,
+      "treasury_10y_yield_pct": 2.98,
+      "modified_duration_years": 8.592787628863823,
+      "gld_price_date": "2022-06-30",
+      "gld_adjusted_close_usd": 168.46001
+    },
+    {
+      "month": "2022-07",
+      "acm_date": "2022-07-29",
+      "treasury_yield_date": "2022-07-29",
+      "acm_term_premium_pct": -0.8783662728066188,
+      "treasury_10y_yield_pct": 2.67,
+      "modified_duration_years": 8.725586370850543,
+      "gld_price_date": "2022-07-29",
+      "gld_adjusted_close_usd": 164.10001
+    },
+    {
+      "month": "2022-08",
+      "acm_date": "2022-08-31",
+      "treasury_yield_date": "2022-08-31",
+      "acm_term_premium_pct": -0.7582704851106326,
+      "treasury_10y_yield_pct": 3.15,
+      "modified_duration_years": 8.52118663915617,
+      "gld_price_date": "2022-08-31",
+      "gld_adjusted_close_usd": 159.27
+    },
+    {
+      "month": "2022-09",
+      "acm_date": "2022-09-30",
+      "treasury_yield_date": "2022-09-30",
+      "acm_term_premium_pct": -0.5140589535292013,
+      "treasury_10y_yield_pct": 3.83,
+      "modified_duration_years": 8.243178425957163,
+      "gld_price_date": "2022-09-30",
+      "gld_adjusted_close_usd": 154.67
+    },
+    {
+      "month": "2022-10",
+      "acm_date": "2022-10-31",
+      "treasury_yield_date": "2022-10-31",
+      "acm_term_premium_pct": -0.20380601987540103,
+      "treasury_10y_yield_pct": 4.1,
+      "modified_duration_years": 8.136404579073508,
+      "gld_price_date": "2022-10-31",
+      "gld_adjusted_close_usd": 151.91
+    },
+    {
+      "month": "2022-11",
+      "acm_date": "2022-11-30",
+      "treasury_yield_date": "2022-11-30",
+      "acm_term_premium_pct": -0.7516611514432388,
+      "treasury_10y_yield_pct": 3.68,
+      "modified_duration_years": 8.303371292992038,
+      "gld_price_date": "2022-11-30",
+      "gld_adjusted_close_usd": 164.81
+    },
+    {
+      "month": "2022-12",
+      "acm_date": "2022-12-30",
+      "treasury_yield_date": "2022-12-30",
+      "acm_term_premium_pct": -0.5810384305159122,
+      "treasury_10y_yield_pct": 3.88,
+      "modified_duration_years": 8.223253721608478,
+      "gld_price_date": "2022-12-30",
+      "gld_adjusted_close_usd": 169.64
+    },
+    {
+      "month": "2023-01",
+      "acm_date": "2023-01-31",
+      "treasury_yield_date": "2023-01-31",
+      "acm_term_premium_pct": -0.8029210883223774,
+      "treasury_10y_yield_pct": 3.52,
+      "modified_duration_years": 8.368276304871316,
+      "gld_price_date": "2023-01-31",
+      "gld_adjusted_close_usd": 179.41
+    },
+    {
+      "month": "2023-02",
+      "acm_date": "2023-02-28",
+      "treasury_yield_date": "2023-02-28",
+      "acm_term_premium_pct": -0.49745628821203036,
+      "treasury_10y_yield_pct": 3.92,
+      "modified_duration_years": 8.207363875575007,
+      "gld_price_date": "2023-02-28",
+      "gld_adjusted_close_usd": 169.78
+    },
+    {
+      "month": "2023-03",
+      "acm_date": "2023-03-31",
+      "treasury_yield_date": "2023-03-31",
+      "acm_term_premium_pct": -0.7325990986951343,
+      "treasury_10y_yield_pct": 3.48,
+      "modified_duration_years": 8.384616445644452,
+      "gld_price_date": "2023-03-31",
+      "gld_adjusted_close_usd": 183.22
+    },
+    {
+      "month": "2023-04",
+      "acm_date": "2023-04-28",
+      "treasury_yield_date": "2023-04-28",
+      "acm_term_premium_pct": -0.7442737987330106,
+      "treasury_10y_yield_pct": 3.44,
+      "modified_duration_years": 8.401002445885943,
+      "gld_price_date": "2023-04-28",
+      "gld_adjusted_close_usd": 184.8
+    },
+    {
+      "month": "2023-05",
+      "acm_date": "2023-05-31",
+      "treasury_yield_date": "2023-05-31",
+      "acm_term_premium_pct": -0.6917971221318431,
+      "treasury_10y_yield_pct": 3.64,
+      "modified_duration_years": 8.31952951621095,
+      "gld_price_date": "2023-05-31",
+      "gld_adjusted_close_usd": 182.32001
+    },
+    {
+      "month": "2023-06",
+      "acm_date": "2023-06-30",
+      "treasury_yield_date": "2023-06-30",
+      "acm_term_premium_pct": -0.771531496155498,
+      "treasury_10y_yield_pct": 3.81,
+      "modified_duration_years": 8.251167779217097,
+      "gld_price_date": "2023-06-30",
+      "gld_adjusted_close_usd": 178.27
+    },
+    {
+      "month": "2023-07",
+      "acm_date": "2023-07-31",
+      "treasury_yield_date": "2023-07-31",
+      "acm_term_premium_pct": -0.6357365432544655,
+      "treasury_10y_yield_pct": 3.97,
+      "modified_duration_years": 8.187563723636393,
+      "gld_price_date": "2023-07-31",
+      "gld_adjusted_close_usd": 182.35001
+    },
+    {
+      "month": "2023-08",
+      "acm_date": "2023-08-31",
+      "treasury_yield_date": "2023-08-31",
+      "acm_term_premium_pct": -0.5199729443096555,
+      "treasury_10y_yield_pct": 4.09,
+      "modified_duration_years": 8.140323500740747,
+      "gld_price_date": "2023-08-31",
+      "gld_adjusted_close_usd": 180.02
+    },
+    {
+      "month": "2023-09",
+      "acm_date": "2023-09-29",
+      "treasury_yield_date": "2023-09-29",
+      "acm_term_premium_pct": 0.14324911685921293,
+      "treasury_10y_yield_pct": 4.59,
+      "modified_duration_years": 7.947668540230871,
+      "gld_price_date": "2023-09-29",
+      "gld_adjusted_close_usd": 171.45
+    },
+    {
+      "month": "2023-10",
+      "acm_date": "2023-10-31",
+      "treasury_yield_date": "2023-10-31",
+      "acm_term_premium_pct": 0.39979438332237116,
+      "treasury_10y_yield_pct": 4.88,
+      "modified_duration_years": 7.838940967236944,
+      "gld_price_date": "2023-10-31",
+      "gld_adjusted_close_usd": 184.09
+    },
+    {
+      "month": "2023-11",
+      "acm_date": "2023-11-30",
+      "treasury_yield_date": "2023-11-30",
+      "acm_term_premium_pct": 0.04836967608294085,
+      "treasury_10y_yield_pct": 4.37,
+      "modified_duration_years": 8.03161538357796,
+      "gld_price_date": "2023-11-30",
+      "gld_adjusted_close_usd": 188.75
+    },
+    {
+      "month": "2023-12",
+      "acm_date": "2023-12-29",
+      "treasury_yield_date": "2023-12-29",
+      "acm_term_premium_pct": -0.34447060098314974,
+      "treasury_10y_yield_pct": 3.88,
+      "modified_duration_years": 8.223253721608478,
+      "gld_price_date": "2023-12-29",
+      "gld_adjusted_close_usd": 191.17
+    },
+    {
+      "month": "2024-01",
+      "acm_date": "2024-01-31",
+      "treasury_yield_date": "2024-01-31",
+      "acm_term_premium_pct": -0.2131415296309953,
+      "treasury_10y_yield_pct": 3.99,
+      "modified_duration_years": 8.179662941417703,
+      "gld_price_date": "2024-01-31",
+      "gld_adjusted_close_usd": 188.45
+    },
+    {
+      "month": "2024-02",
+      "acm_date": "2024-02-29",
+      "treasury_yield_date": "2024-02-29",
+      "acm_term_premium_pct": -0.16622527986715152,
+      "treasury_10y_yield_pct": 4.25,
+      "modified_duration_years": 8.07794617205953,
+      "gld_price_date": "2024-02-29",
+      "gld_adjusted_close_usd": 189.31
+    },
+    {
+      "month": "2024-03",
+      "acm_date": "2024-03-28",
+      "treasury_yield_date": "2024-03-28",
+      "acm_term_premium_pct": -0.27270405919990015,
+      "treasury_10y_yield_pct": 4.2,
+      "modified_duration_years": 8.097364717866553,
+      "gld_price_date": "2024-03-28",
+      "gld_adjusted_close_usd": 205.72
+    },
+    {
+      "month": "2024-04",
+      "acm_date": "2024-04-30",
+      "treasury_yield_date": "2024-04-30",
+      "acm_term_premium_pct": -0.042446406793270164,
+      "treasury_10y_yield_pct": 4.69,
+      "modified_duration_years": 7.909930558538649,
+      "gld_price_date": "2024-04-30",
+      "gld_adjusted_close_usd": 211.87
+    },
+    {
+      "month": "2024-05",
+      "acm_date": "2024-05-31",
+      "treasury_yield_date": "2024-05-31",
+      "acm_term_premium_pct": -0.0024265071708828856,
+      "treasury_10y_yield_pct": 4.51,
+      "modified_duration_years": 7.978047051666038,
+      "gld_price_date": "2024-05-31",
+      "gld_adjusted_close_usd": 215.3
+    },
+    {
+      "month": "2024-06",
+      "acm_date": "2024-06-28",
+      "treasury_yield_date": "2024-06-28",
+      "acm_term_premium_pct": -0.13195258860107995,
+      "treasury_10y_yield_pct": 4.36,
+      "modified_duration_years": 8.0354615880861,
+      "gld_price_date": "2024-06-28",
+      "gld_adjusted_close_usd": 215.00999
+    },
+    {
+      "month": "2024-07",
+      "acm_date": "2024-07-31",
+      "treasury_yield_date": "2024-07-31",
+      "acm_term_premium_pct": -0.12235770193927742,
+      "treasury_10y_yield_pct": 4.09,
+      "modified_duration_years": 8.140323500740747,
+      "gld_price_date": "2024-07-31",
+      "gld_adjusted_close_usd": 226.55
+    },
+    {
+      "month": "2024-08",
+      "acm_date": "2024-08-30",
+      "treasury_yield_date": "2024-08-30",
+      "acm_term_premium_pct": -0.13478381330343225,
+      "treasury_10y_yield_pct": 3.91,
+      "modified_duration_years": 8.211332186497774,
+      "gld_price_date": "2024-08-30",
+      "gld_adjusted_close_usd": 231.28999
+    },
+    {
+      "month": "2024-09",
+      "acm_date": "2024-09-30",
+      "treasury_yield_date": "2024-09-30",
+      "acm_term_premium_pct": -0.11930551446677296,
+      "treasury_10y_yield_pct": 3.81,
+      "modified_duration_years": 8.251167779217097,
+      "gld_price_date": "2024-09-30",
+      "gld_adjusted_close_usd": 243.06
+    },
+    {
+      "month": "2024-10",
+      "acm_date": "2024-10-31",
+      "treasury_yield_date": "2024-10-31",
+      "acm_term_premium_pct": 0.15642596814213672,
+      "treasury_10y_yield_pct": 4.28,
+      "modified_duration_years": 8.066327326968748,
+      "gld_price_date": "2024-10-31",
+      "gld_adjusted_close_usd": 253.50999
+    },
+    {
+      "month": "2024-11",
+      "acm_date": "2024-11-29",
+      "treasury_yield_date": "2024-11-29",
+      "acm_term_premium_pct": 0.07519710794678591,
+      "treasury_10y_yield_pct": 4.18,
+      "modified_duration_years": 8.105151019580992,
+      "gld_price_date": "2024-11-29",
+      "gld_adjusted_close_usd": 245.59
+    },
+    {
+      "month": "2024-12",
+      "acm_date": "2024-12-31",
+      "treasury_yield_date": "2024-12-31",
+      "acm_term_premium_pct": 0.47447495672121764,
+      "treasury_10y_yield_pct": 4.58,
+      "modified_duration_years": 7.951456681495051,
+      "gld_price_date": "2024-12-31",
+      "gld_adjusted_close_usd": 242.13
+    },
+    {
+      "month": "2025-01",
+      "acm_date": "2025-01-31",
+      "treasury_yield_date": "2025-01-31",
+      "acm_term_premium_pct": 0.48439251114242143,
+      "treasury_10y_yield_pct": 4.58,
+      "modified_duration_years": 7.951456681495051,
+      "gld_price_date": "2025-01-31",
+      "gld_adjusted_close_usd": 258.56
+    },
+    {
+      "month": "2025-02",
+      "acm_date": "2025-02-28",
+      "treasury_yield_date": "2025-02-28",
+      "acm_term_premium_pct": 0.2540514209497706,
+      "treasury_10y_yield_pct": 4.24,
+      "modified_duration_years": 8.08182449488795,
+      "gld_price_date": "2025-02-28",
+      "gld_adjusted_close_usd": 263.26999
+    },
+    {
+      "month": "2025-03",
+      "acm_date": "2025-03-31",
+      "treasury_yield_date": "2025-03-31",
+      "acm_term_premium_pct": 0.3637421239944727,
+      "treasury_10y_yield_pct": 4.23,
+      "modified_duration_years": 8.085705508655009,
+      "gld_price_date": "2025-03-31",
+      "gld_adjusted_close_usd": 288.14001
+    },
+    {
+      "month": "2025-04",
+      "acm_date": "2025-04-30",
+      "treasury_yield_date": "2025-04-30",
+      "acm_term_premium_pct": 0.5872484834575582,
+      "treasury_10y_yield_pct": 4.17,
+      "modified_duration_years": 8.109048225815535,
+      "gld_price_date": "2025-04-30",
+      "gld_adjusted_close_usd": 303.76999
+    },
+    {
+      "month": "2025-05",
+      "acm_date": "2025-05-30",
+      "treasury_yield_date": "2025-05-30",
+      "acm_term_premium_pct": 0.7334541556568461,
+      "treasury_10y_yield_pct": 4.41,
+      "modified_duration_years": 8.016257165343621,
+      "gld_price_date": "2025-05-30",
+      "gld_adjusted_close_usd": 303.60001
+    },
+    {
+      "month": "2025-06",
+      "acm_date": "2025-06-30",
+      "treasury_yield_date": "2025-06-30",
+      "acm_term_premium_pct": 0.6176023190613629,
+      "treasury_10y_yield_pct": 4.24,
+      "modified_duration_years": 8.08182449488795,
+      "gld_price_date": "2025-06-30",
+      "gld_adjusted_close_usd": 304.82999
+    },
+    {
+      "month": "2025-07",
+      "acm_date": "2025-07-31",
+      "treasury_yield_date": "2025-07-31",
+      "acm_term_premium_pct": 0.6268059349952857,
+      "treasury_10y_yield_pct": 4.37,
+      "modified_duration_years": 8.03161538357796,
+      "gld_price_date": "2025-07-31",
+      "gld_adjusted_close_usd": 302.95999
+    },
+    {
+      "month": "2025-08",
+      "acm_date": "2025-08-29",
+      "treasury_yield_date": "2025-08-29",
+      "acm_term_premium_pct": 0.7687988533933279,
+      "treasury_10y_yield_pct": 4.23,
+      "modified_duration_years": 8.085705508655009,
+      "gld_price_date": "2025-08-29",
+      "gld_adjusted_close_usd": 318.07001
+    },
+    {
+      "month": "2025-09",
+      "acm_date": "2025-09-30",
+      "treasury_yield_date": "2025-09-30",
+      "acm_term_premium_pct": 0.6070736594676043,
+      "treasury_10y_yield_pct": 4.16,
+      "modified_duration_years": 8.112948138619943,
+      "gld_price_date": "2025-09-30",
+      "gld_adjusted_close_usd": 355.47
+    },
+    {
+      "month": "2025-10",
+      "acm_date": "2025-10-31",
+      "treasury_yield_date": "2025-10-31",
+      "acm_term_premium_pct": 0.5588153167707266,
+      "treasury_10y_yield_pct": 4.11,
+      "modified_duration_years": 8.132488379709176,
+      "gld_price_date": "2025-10-31",
+      "gld_adjusted_close_usd": 368.12
+    },
+    {
+      "month": "2025-11",
+      "acm_date": "2025-11-28",
+      "treasury_yield_date": "2025-11-28",
+      "acm_term_premium_pct": 0.5781893046400914,
+      "treasury_10y_yield_pct": 4.02,
+      "modified_duration_years": 8.167832366655762,
+      "gld_price_date": "2025-11-28",
+      "gld_adjusted_close_usd": 387.88
+    },
+    {
+      "month": "2025-12",
+      "acm_date": "2025-12-31",
+      "treasury_yield_date": "2025-12-31",
+      "acm_term_premium_pct": 0.7477857361634612,
+      "treasury_10y_yield_pct": 4.18,
+      "modified_duration_years": 8.105151019580992,
+      "gld_price_date": "2025-12-31",
+      "gld_adjusted_close_usd": 396.31
+    },
+    {
+      "month": "2026-01",
+      "acm_date": "2026-01-30",
+      "treasury_yield_date": "2026-01-30",
+      "acm_term_premium_pct": 0.7622042903349269,
+      "treasury_10y_yield_pct": 4.26,
+      "modified_duration_years": 8.074070537944978,
+      "gld_price_date": "2026-01-30",
+      "gld_adjusted_close_usd": 444.95001
+    },
+    {
+      "month": "2026-02",
+      "acm_date": "2026-02-27",
+      "treasury_yield_date": "2026-02-27",
+      "acm_term_premium_pct": 0.591515375075296,
+      "treasury_10y_yield_pct": 3.97,
+      "modified_duration_years": 8.187563723636393,
+      "gld_price_date": "2026-02-27",
+      "gld_adjusted_close_usd": 483.75
+    },
+    {
+      "month": "2026-03",
+      "acm_date": "2026-03-31",
+      "treasury_yield_date": "2026-03-31",
+      "acm_term_premium_pct": 0.6490704557743325,
+      "treasury_10y_yield_pct": 4.3,
+      "modified_duration_years": 8.05859484420236,
+      "gld_price_date": "2026-03-31",
+      "gld_adjusted_close_usd": 430.29001
+    },
+    {
+      "month": "2026-04",
+      "acm_date": "2026-04-30",
+      "treasury_yield_date": "2026-04-30",
+      "acm_term_premium_pct": 0.7144841384381739,
+      "treasury_10y_yield_pct": 4.4,
+      "modified_duration_years": 8.02009273432465,
+      "gld_price_date": "2026-04-30",
+      "gld_adjusted_close_usd": 423.66
+    },
+    {
+      "month": "2026-05",
+      "acm_date": "2026-05-29",
+      "treasury_yield_date": "2026-05-29",
+      "acm_term_premium_pct": 0.6606688575495583,
+      "treasury_10y_yield_pct": 4.45,
+      "modified_duration_years": 8.000941401495957,
+      "gld_price_date": "2026-05-29",
+      "gld_adjusted_close_usd": 417.12
+    },
+    {
+      "month": "2026-06",
+      "acm_date": "2026-06-30",
+      "treasury_yield_date": "2026-06-30",
+      "acm_term_premium_pct": 0.5062311093131844,
+      "treasury_10y_yield_pct": 4.44,
+      "modified_duration_years": 8.004766370022352,
+      "gld_price_date": "2026-06-30",
+      "gld_adjusted_close_usd": 368.38
+    },
+    {
+      "month": "2026-07",
+      "acm_date": "2026-07-31",
+      "treasury_yield_date": "2026-07-31",
+      "acm_term_premium_pct": 0.8332224629722234,
+      "treasury_10y_yield_pct": 4.75,
+      "modified_duration_years": 7.887412362883798,
+      "gld_price_date": "2026-07-31",
+      "gld_adjusted_close_usd": 371.54001
+    },
+    {
+      "month": "2026-08",
+      "acm_date": "2026-08-31",
+      "treasury_yield_date": "2026-08-31",
+      "acm_term_premium_pct": 0.7593610611876205,
+      "treasury_10y_yield_pct": 4.75,
+      "modified_duration_years": 7.887412362883798,
+      "gld_price_date": "2026-08-31",
+      "gld_adjusted_close_usd": 408.42001
+    },
+    {
+      "month": "2026-09",
+      "acm_date": "2026-09-30",
+      "treasury_yield_date": "2026-09-30",
+      "acm_term_premium_pct": 0.885008256163907,
+      "treasury_10y_yield_pct": 5.29,
+      "modified_duration_years": 7.688873955301869,
+      "gld_price_date": "2026-09-30",
+      "gld_adjusted_close_usd": 380.84
+    }
+  ]
+}
