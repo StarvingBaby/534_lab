@@ -63,5 +63,9 @@ async function boot(payload, ok = true, refreshOK = true) {
   assert.equal(failed.elements.start.disabled, true);
   const cached = await boot({observations: rows}, true, false);
   assert.match(cached.elements.status.textContent, /Latest bond refresh failed/);
+  const fallback = await boot({observations: rows, sources: {yield: {name: 'U.S. Treasury daily 10-year par yield', fallback_reason: 'test timeout'}}});
+  assert.match(fallback.elements.readout.textContent, /U.S. Treasury daily 10-year par yield/);
+  assert.doesNotMatch(fallback.elements.readout.textContent, /DGS10/);
+  assert.match(fallback.elements.provenance.textContent, /official Treasury feed throughout/);
   console.log('Actual page controller passed: automatic finding, exact dates, charts, selectors, history presets, shocks, reset, unavailable and cached-error states.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

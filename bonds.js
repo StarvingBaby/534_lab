@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id), A = window.BondAnalysis;
-  let rows = [], visible = [], discovered, charts = [], years = 0;
+  let rows = [], visible = [], discovered, charts = [], years = 0, yieldName = 'FRED DGS10';
   const signed = (v, decimals = 2) => `${v > 0 ? '+' : ''}${v.toFixed(decimals)}`;
   const fixed = (v, n = 2) => v.toFixed(n);
   const selected = () => [Number($('start').value), Number($('end').value)];
@@ -18,7 +18,7 @@
     if (!r) return;
     $('inspect').value = index;
     const base = rows[selected()[0]].gld_adjusted_close_usd;
-    $('readout').textContent = `${r.month} | Duration ${fixed(r.modified_duration_years, 3)} years | ACM ${fixed(r.acm_term_premium_pct, 3)}% (${r.acm_date}) | DGS10 ${fixed(r.treasury_10y_yield_pct)}% (${r.treasury_yield_date}) | GLD $${fixed(r.gld_adjusted_close_usd)} · index ${fixed(r.gld_adjusted_close_usd / base * 100)} (${r.gld_price_date})`;
+    $('readout').textContent = `${r.month} | Duration ${fixed(r.modified_duration_years, 3)} years | ACM ${fixed(r.acm_term_premium_pct, 3)}% (${r.acm_date}) | ${yieldName} ${fixed(r.treasury_10y_yield_pct)}% (${r.treasury_yield_date}) | GLD $${fixed(r.gld_adjusted_close_usd)} · index ${fixed(r.gld_adjusted_close_usd / base * 100)} (${r.gld_price_date})`;
     charts.forEach(({ line, x }) => { line.setAttribute('x1', x(index)); line.setAttribute('x2', x(index)); });
   }
   function draw(container, key, color, startMonth, endMonth, base = 1) {
@@ -99,8 +99,9 @@
   async function load() {
     try {
       const response = await fetch('./bond_data.json', { cache: 'no-store' });
-      if (!response.ok) throw Error(`Verified bond data unavailable (HTTP ${response.status}). Run the existing GitHub Actions refresh to download official ACM and DGS10 data.`);
+      if (!response.ok) throw Error(`Verified bond data unavailable (HTTP ${response.status}). Run the existing GitHub Actions refresh to download official ACM and 10-year Treasury yield data.`);
       const data = await response.json();
+      yieldName = data.sources?.yield?.name || 'FRED DGS10';
       rows = A.validate(data.observations);
       discovered = A.discover(rows);
       for (const id of ['start', 'end']) rows.forEach((r, i) => {
@@ -109,7 +110,7 @@
       $('start').value = discovered.start; $('end').value = discovered.end;
       document.querySelectorAll('button,select,input').forEach(el => el.disabled = false);
       $('dataStamp').textContent = `Range ${rows[0].month}–${rows.at(-1).month} · Data through: ${rows.at(-1).acm_date} · Retrieved ${(data.generated_at || 'unknown').slice(0, 10)}`;
-      $('provenance').textContent = `Bond retrieval: ${data.generated_at || 'unknown'}. GLD retrieval: ${data.sources?.gold?.fetched_at || 'unknown'}. Latest ACM: ${rows.at(-1).acm_date}; DGS10: ${rows.at(-1).treasury_yield_date}; GLD: ${rows.at(-1).gld_price_date}. Ingestion validates workbook sheet and column names before publication.`;
+      $('provenance').textContent = `Bond retrieval: ${data.generated_at || 'unknown'}. GLD retrieval: ${data.sources?.gold?.fetched_at || 'unknown'}. Latest ACM: ${rows.at(-1).acm_date}; ${yieldName}: ${rows.at(-1).treasury_yield_date}; GLD: ${rows.at(-1).gld_price_date}. ${data.sources?.yield?.fallback_reason ? 'FRED was unavailable; this refresh uses the official Treasury feed throughout. ' : ''}Ingestion validates source fields before publication.`;
       const age = Date.now() - Date.parse(rows.at(-1).acm_date);
       $('status').textContent = age > 65 * 86400000 ? 'Stale data: latest aligned observation is more than 65 days old. The finding uses the dated historical cache.' : '';
       render();

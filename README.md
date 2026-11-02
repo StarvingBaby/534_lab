@@ -50,12 +50,24 @@ market data & deploy** workflow; it refreshes market prices before bond alignmen
 - GLD: existing `data.json` adjusted prices from Yahoo Finance/yfinance; no changes
   to the SPY/GLD analysis or return calculations.
 
-**Verification status:** local access to the official downloads was denied during
-implementation. The workbook mapping and live CSV format have therefore **not yet
-been verified against a downloaded source in this checkout**. The refresh validates
-these contracts at runtime and fails explicitly if either source differs. Until a
-real refresh succeeds, no `bond_data.json` or historical claim is supplied. The first
-successful Actions refresh and public-page review remain required for acceptance.
+**Network resilience:** downloads retry transient connection errors, timeouts,
+HTTP 429 and server errors up to three times, with 25-second per-request timeouts
+and exponential backoff. Each attempt logs the exact source. If FRED remains
+unavailable or returns invalid/insufficient history, the refresh downloads the
+[official Treasury daily par yield curve XML](https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2024)
+for every year needed by GLD. It reads `NEW_DATE` and `BC_10YEAR` (percent), using
+Treasury for the entire yield history rather than mixing providers. This is an
+explicit alternative source to DGS10, recorded in `sources.yield` with the actual
+URLs and FRED failure reason, and labeled in the page’s readout/provenance.
+Missing annual feeds or insufficient overlap fail without publishing partial data.
+
+**Verification status:** the supplied Actions log confirms the NY Fed workbook
+parsed successfully before the FRED request timed out. The Treasury fallback was
+checked live locally: its 2024 XML parsed 250 observations, from 2024-01-02 (3.95%)
+through 2024-12-31 (4.58%). These are source-validation examples, not fixed inputs
+to the site. The first complete successful Actions refresh and public-page review
+remain required. The Excel engine is explicitly `calamine` via `python-calamine`,
+avoiding the deprecated xlrd reader.
 
 Only completed calendar months common to all three sources are retained. Last
 available observations are used without filling missing months; actual source
@@ -63,7 +75,7 @@ dates remain visible because they can differ within a month. The existing roughl
 six-year GLD history bounds the shared history. Current partial months are excluded.
 
 Duration models a fresh 10-year par Treasury each month: face 100, 20 semiannual
-cash flows, annual coupon equal to DGS10 / 100. Discount at `1 + y/2`, compute
+cash flows, annual coupon equal to the selected 10-year yield / 100. Discount at `1 + y/2`, compute
 time-weighted present values in years, then divide Macaulay duration by `1 + y/2`.
 The maturity resets each month; this does not track an aging CUSIP. A shock uses
 `ΔP/P ≈ -modified_duration × shock_bps / 10000`, excluding convexity.

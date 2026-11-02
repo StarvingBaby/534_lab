@@ -5,13 +5,71 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
+from urllib.error import HTTPError, URLError
 
 import fetch_bond_data as fetcher
 from bond_math import align, discover_window, monthly_last, par_bond, window_metrics
 
 
 class BondsTests(unittest.TestCase):
+    def test_download_retries_timeout_then_succeeds(self):
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b'verified response'
+        with patch.object(fetcher, 'urlopen', side_effect=[TimeoutError('test timeout'), response]) as request, patch.object(fetcher.time, 'sleep') as sleep:
+            self.assertEqual(fetcher.download('https://example.test'), b'verified response')
+            self.assertEqual(request.call_count, 2)
+            sleep.assert_called_once_with(2)
+
+    def test_download_exhaustion_names_source_and_404_is_not_retried(self):
+        with patch.object(fetcher, 'urlopen', side_effect=URLError('test connection failed')) as request, patch.object(fetcher.time, 'sleep'):
+            with self.assertRaisesRegex(RuntimeError, 'https://example.test'):
+                fetcher.download('https://example.test')
+            self.assertEqual(request.call_count, 3)
+        with patch.object(fetcher, 'urlopen', side_effect=HTTPError('https://example.test', 404, 'missing', {}, None)) as request:
+            with self.assertRaises(HTTPError):
+                fetcher.download('https://example.test')
+            self.assertEqual(request.call_count, 1)
+
+    @staticmethod
+    def treasury_xml(year):
+        entries = ''.join(f'<entry><m:properties><d:NEW_DATE>{year}-{month:02d}-28T00:00:00</d:NEW_DATE><d:BC_10YEAR>4.25</d:BC_10YEAR></m:properties></entry>' for month in range(1, 13))
+        return ('<feed xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">' + entries + '</feed>').encode()
+
+    def test_treasury_xml_fields(self):
+        self.assertEqual(fetcher.parse_treasury(self.treasury_xml(2024))[0], ('2024-01-28', 4.25))
+        with self.assertRaises(ValueError):
+            fetcher.parse_treasury(b'<html>upstream error</html>')
+        with self.assertRaises(ValueError):
+            fetcher.parse_treasury(self.treasury_xml(2024).replace(b'BC_10YEAR', b'BC_2YEAR'))
+
+    def test_yield_fallback_uses_all_treasury_years_and_records_reason(self):
+        gold = {f'{year}-{month:02d}': ('unused', 200) for year in range(2020, 2024) for month in range(1, 13)}
+        def source(url):
+            if url == fetcher.FRED_URL:
+                raise RuntimeError('test FRED timeout')
+            return self.treasury_xml(int(url.split('=')[-1]))
+        with patch.object(fetcher, 'download', side_effect=source) as request:
+            yields, metadata = fetcher.fetch_yields(gold, date(2024, 1, 1))
+        self.assertEqual(len(yields), 48)
+        self.assertEqual(request.call_count, 5)
+        self.assertEqual(metadata['columns'], ['NEW_DATE', 'BC_10YEAR'])
+        self.assertIn('test FRED timeout', metadata['fallback_reason'])
+
+    def test_healthy_fred_does_not_use_fallback(self):
+        csv = b'observation_date,DGS10\n' + b''.join(f'{year}-{month:02d}-28,4\n'.encode() for year in range(2020, 2024) for month in range(1, 13))
+        gold = {f'{year}-{month:02d}': ('unused', 200) for year in range(2020, 2024) for month in range(1, 13)}
+        with patch.object(fetcher, 'download', return_value=csv) as request:
+            _, metadata = fetcher.fetch_yields(gold, date(2024, 1, 1))
+        request.assert_called_once_with(fetcher.FRED_URL)
+        self.assertEqual(metadata['name'], 'FRED DGS10')
+
+    def test_failed_fallback_propagates_without_partial_history(self):
+        gold = {f'2020-{month:02d}': ('unused', 200) for month in range(1, 13)}
+        with patch.object(fetcher, 'download', side_effect=RuntimeError('test all providers unavailable')):
+            with self.assertRaisesRegex(RuntimeError, 'all providers unavailable'):
+                fetcher.fetch_yields(gold, date(2024, 1, 1))
+
     def test_par_price_and_duration(self):
         for y in (0, 0.5, 2, 5, 10):
             price, duration = par_bond(y)
