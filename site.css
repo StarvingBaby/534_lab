@@ -36,7 +36,7 @@ body {
   flex-wrap: wrap;
   gap: 18px 28px;
   min-height: 0;
-  padding-block: 0 !important;
+  padding-block: 0;
 }
 
 .site-header .site-brand {

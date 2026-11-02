@@ -15,7 +15,8 @@ const html = fs.readFileSync('bonds.html', 'utf8');
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'HTML IDs must be unique');
 for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
-  if (!match[1].startsWith('http') && !match[1].endsWith('.json')) assert.ok(fs.existsSync(match[1]), `Missing local asset: ${match[1]}`);
+  const asset = match[1].split(/[?#]/)[0];
+  if (!asset.startsWith('http') && !asset.endsWith('.json')) assert.ok(fs.existsSync(asset), `Missing local asset: ${asset}`);
 }
 async function boot(payload, ok = true, refreshOK = true) {
   const elements = Object.fromEntries([...html.matchAll(/id="([^"]+)"/g)].map(m => [m[1], new Element()]));
