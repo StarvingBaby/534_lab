@@ -32,13 +32,15 @@ jobs:
         run: pip install -r requirements.txt
       - name: Refresh SPY and GLD data
         run: python fetch_data.py
+      - name: Refresh Treasury and term-premium evidence
+        run: python fetch_bond_data.py
       - name: Commit refreshed data
         run: |
-          if ! git diff --quiet -- data.json || [ -n "$(git ls-files --others --exclude-standard data.json)" ]; then
+          if ! git diff --quiet -- data.json bond_data.json bond_refresh_status.json || [ -n "$(git ls-files --others --exclude-standard data.json bond_data.json bond_refresh_status.json)" ]; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add data.json
-            git commit -m 'Update SPY and GLD monthly prices'
+            git add data.json bond_data.json bond_refresh_status.json
+            git commit -m 'Update market prices and bond research evidence'
             git push
           fi
       - name: Configure Pages
