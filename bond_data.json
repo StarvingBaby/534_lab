@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-02T19:04:20+00:00",
+  "generated_at": "2026-11-03T03:57:26+00:00",
   "last_observation_date": "2026-09-30",
   "frequency": "Completed calendar months; last available observation; inner join on month",
   "sources": {
@@ -34,7 +34,7 @@
     "gold": {
       "file": "data.json",
       "source": "Yahoo Finance via yfinance",
-      "fetched_at": "2026-11-02T19:04:20+00:00"
+      "fetched_at": "2026-11-03T03:57:25+00:00"
     }
   },
   "definitions": {
