@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-05T03:33:39+00:00",
+  "generated_at": "2026-11-06T03:29:16+00:00",
   "last_observation_date": "2026-10-30",
   "frequency": "Completed calendar months; last available observation; inner join on month",
   "sources": {
@@ -13,28 +13,17 @@
       ]
     },
     "yield": {
-      "url": "https://home.treasury.gov/resource-center-data-chart-center/interest-rates",
-      "urls": [
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2020",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2021",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2022",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2023",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2024",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2025",
-        "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=2026"
-      ],
-      "name": "U.S. Treasury daily 10-year par yield",
+      "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2004-01-01",
+      "name": "FRED DGS10",
       "columns": [
-        "NEW_DATE",
-        "BC_10YEAR"
-      ],
-      "fallback_reason": "Download failed after 3 attempts: https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2004-01-01: The read operation timed out",
-      "note": "Official Treasury alternative to FRED DGS10; not a FRED download. No mixing of providers."
+        "observation_date or DATE",
+        "DGS10"
+      ]
     },
     "gold": {
       "file": "data.json",
       "source": "Yahoo Finance via yfinance",
-      "fetched_at": "2026-11-05T03:33:38+00:00"
+      "fetched_at": "2026-11-06T03:29:16+00:00"
     }
   },
   "definitions": {
