@@ -3,76 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>The Safe Haven Paradox · Aurum Lab</title>
-  <meta name="description" content="Treasury duration, the NY Fed 10-year ACM term premium, and GLD: a reproducible historical comparison.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bonds.css?v=20261102-shell2">
-  <link rel="stylesheet" href="site.css?v=20261102-shell2">
-  <script defer src="bond_analysis.js"></script>
-  <script defer src="bonds.js"></script>
+  <title>Bond–Gold Puzzle · Aurum Lab</title>
+  <link rel="canonical" href="https://starvingbaby.github.io/534_lab/">
+  <meta http-equiv="refresh" content="0;url=./index.html">
+  <script>window.location.replace('./index.html' + window.location.search + window.location.hash);</script>
 </head>
 <body>
-  <header class="site-header">
-    <nav class="wrap site-container site-nav" aria-label="Main navigation">
-      <a class="site-brand" href="index.html"><span class="site-mark" aria-hidden="true">✦</span>AURUM LAB</a>
-      <div class="site-links">
-        <a class="site-link" href="index.html">Gold Study</a>
-        <a class="site-link" href="portfolio.html">Allocation Lab</a>
-        <a class="site-link" href="bonds.html" aria-current="page">Bond–Gold Puzzle</a>
-      </div>
-    </nav>
-  </header>
-  <main class="wrap site-container site-main">
-    <section class="hero site-hero">
-      <p class="eyebrow">AURUM LAB / RESEARCH NOTE 03</p>
-      <h1>Are safe-haven assets<br>really <em>safe?</em></h1>
-      <p class="intro">Treasury duration, 10-year term premium, and gold.<br>One timeline. Three views of risk.</p>
-      <div class="hero-bottom"><a class="cta" href="#evidence">Explore the evidence ↓</a><p id="dataStamp">Checking verified monthly observations…</p></div>
-    </section>
-
-    <div id="status" role="status">Loading official bond data and aligned GLD prices…</div>
-    <noscript><p class="notice">JavaScript is required to compute and display the finding. Download <a href="bond_data.json">the observations</a> for independent analysis.</p></noscript>
-
-    <section id="findingPanel" class="finding" aria-labelledby="findingTitle">
-      <div class="section-top"><p id="findingLabel" class="eyebrow">THE HISTORICAL FINDING</p><button id="copy" disabled>Copy finding ↗</button></div>
-      <h2 id="findingTitle">What did gold do when the premium changed?</h2>
-      <p id="windowDates" class="dates">Waiting for verified endpoints</p>
-      <div class="metrics"><div><span>10Y ACM term-premium change</span><strong id="tpChange">—</strong></div><div><span>GLD holding-period return</span><strong id="goldReturn">—</strong></div><div><span>Duration proxy · start → end</span><strong id="durationChange">—</strong></div></div>
-      <p id="findingText" aria-live="polite">A historical conclusion will appear automatically when verified aligned data is available.</p>
-      <p id="selectionNote" class="muted">Initial window: largest absolute six-month change in the ACM estimate, selected without using GLD returns. This is a descriptive example, not a test of a general hedge.</p>
-      <a class="small-link" href="#methodology">Sources, alignment & limitations ↗</a>
-    </section>
-
-    <section id="evidence" aria-labelledby="evidenceTitle">
-      <div class="section-top"><div><p class="eyebrow">01 / THE BOND–GOLD TIMELINE</p><h2 id="evidenceTitle">A premium for uncertainty.</h2></div><div class="ranges" aria-label="Chart history"><button data-years="3" disabled>3Y</button><button data-years="5" disabled>5Y</button><button data-years="10" disabled>10Y</button><button data-years="0" aria-pressed="true" disabled>All</button></div></div>
-      <p class="muted">Both bond series are always visible. The shaded window supports the finding above; changing chart history keeps the selected endpoints in view.</p>
-      <div class="controls"><label>Window start<select id="start" disabled></select></label><span aria-hidden="true">→</span><label>Window end<select id="end" disabled></select></label><button id="reset" disabled>Restore discovered window</button></div>
-      <p id="windowError" role="alert"></p>
-      <div class="charts" id="charts">
-        <div class="chart-head"><h3>10-year par Treasury · modified duration proxy</h3><span class="mint">Years</span></div>
-        <div id="durationChart" class="chart" role="img" aria-label="Historical monthly modified duration proxy, in years"></div>
-        <div class="chart-head"><h3>NY Fed ACM · 10-year term premium</h3><span class="violet">Percent annualized · model estimate</span></div>
-        <div id="premiumChart" class="chart" role="img" aria-label="Historical monthly ten-year ACM term premium, in percent"></div>
-        <div class="chart-head"><h3>GLD ETF · adjusted-price growth</h3><span class="gold">Index · selected start = 100</span></div>
-        <div id="goldChart" class="chart" role="img" aria-label="Historical GLD adjusted price index"></div>
-        <label class="inspect">Inspect a month <input id="inspect" type="range" min="0" max="1" value="0" disabled></label>
-        <p id="readout" class="readout" aria-live="polite">Hover, tap, or use the month slider to inspect all three series.</p>
-        <p id="historyRange" class="muted"></p>
-      </div>
-      <p class="notice">The duration series models a fresh 10-year par bond each month. Changes reflect yields under fixed maturity assumptions, rather than the aging of a single Treasury security.</p>
-    </section>
-
-    <section class="experiment" aria-labelledby="shockTitle"><div><p class="eyebrow">02 / THE DURATION EXPERIMENT</p><h2 id="shockTitle">A rate move has a price.</h2><p class="muted">Apply a parallel yield shock to the proxy at your selected window’s end. This sensitivity estimate ignores convexity.</p><label for="shock">Yield shock: <output id="shockLabel">+100 bps</output></label><input id="shock" type="range" min="-200" max="200" step="5" value="100" disabled><div class="slider-labels"><span>−200 bps</span><span>+200 bps</span></div></div><div class="shock-result"><p>Hypothetical $10,000 bond</p><strong id="bondValue">—</strong><p id="shockResult">Waiting for verified duration.</p><code>ΔP/P ≈ −D<sub>mod</sub> × Δy</code><p class="muted">First-order estimate, not a realized investment return.</p></div></section>
-
-    <section id="methodology"><p class="eyebrow">03 / SHOW YOUR WORK</p><h2>Sources & methodology.</h2>
-      <p class="muted">Yield-source fallback: if FRED is unavailable after retries, the refresh uses the <a href="https://home.treasury.gov/resource-center-data-chart-center/interest-rates">U.S. Treasury’s official daily par yield curve</a>, field <code>BC_10YEAR</code>, for the entire history. It is an explicitly documented alternative to DGS10. The actual provider is shown in the month readout and retrieval details; providers are never mixed within a refresh. The duration calculation uses the selected source’s 10-year yield in percent.</p>
-      <details open><summary>Three series, three distinct definitions</summary><p><a href="https://www.newyorkfed.org/research/data_indicators/term-premia-tabs">New York Fed ACM Treasury Term Premia</a>: official <a href="https://www.newyorkfed.org/medialibrary/media/research/data_indicators/ACMTermPremium.xls">workbook</a>, sheet <code>ACM Monthly</code>, columns <code>DATE</code> and <code>ACMTP10</code>. End-of-month model estimates in percent annualized; estimates can be revised and are not a traded price.</p><p><a href="https://fred.stlouisfed.org/series/DGS10">FRED DGS10</a>: daily 10-year constant-maturity Treasury yield, percent. We use the last available yield in each completed month, retaining its actual date.</p><p><a href="https://finance.yahoo.com/quote/GLD/history/">GLD via Yahoo Finance / yfinance</a>: existing <a href="data.json">adjusted closing prices</a> (<code>auto_adjust=True</code>), last common SPY/GLD trading date per month. Adjustments reflect splits/distributions as supplied by the vendor. GLD is an ETF proxy for gold, not spot gold; returns exclude personal taxes and trading costs.</p></details>
-      <details><summary>Duration calculation & rate-shock units</summary><p>Face value 100; maturity 10 years; 20 semiannual cash flows. Set annual coupon rate equal to the selected 10-year yield / 100. Discount each coupon and final principal at (1 + y/2)<sup>t</sup>. Price is the sum of present values. Macaulay duration is their time-weighted mean in years; modified duration divides it by (1 + y/2). This is a hypothetical model proxy, not a measured CUSIP duration.</p><p>For a +100 bps shock, Δy = +0.01 and ΔP/P ≈ −D<sub>mod</sub> × 0.01. This ignores convexity, coupon reinvestment, roll-down, and nonparallel yield-curve changes.</p></details>
-      <details><summary>Alignment, window selection & reproducibility</summary><p>Only completed months present in all three sources are used; missing months are never filled. ACM, yield, and GLD may have different observation dates within the same calendar month. The finding explicitly reports those endpoint dates. GLD return is (end adjusted close / start adjusted close − 1) × 100. Term-premium change is (end % − start %) × 100 basis points.</p><p>The initial finding scans all consecutive six-calendar-month windows and chooses the largest absolute ACM change, breaking ties by earliest start. GLD does not influence selection. This retrospective extreme is deliberately illustrative and can exaggerate typical movements; it cannot establish causality, a dependable hedge, or future performance. User-selected windows recompute the same formulas.</p><p id="provenance">Retrieval dates appear after data loads.</p><p><a href="bond_data.json">Download aligned observations & metadata</a> · <a href="https://github.com/StarvingBaby/534_lab">Source code</a></p></details>
-    </section>
-    <footer><a class="brand" href="index.html">✦ AURUM LAB</a><span>Historical evidence. Explicit assumptions. No causal claims.</span></footer>
-  </main>
+  <p>The Bond–Gold Puzzle is now the homepage. <a href="./index.html">Open the research page →</a></p>
 </body>
 </html>

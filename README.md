@@ -1,8 +1,9 @@
-# Gold vs. Stocks — The Safe Haven Experiment
+# Aurum Lab — The Safe Haven Experiment
 
 ## Bond–Gold Puzzle / assignment entry point
 
-Open [`bonds.html`](bonds.html) for **The Safe Haven Paradox**. It charts both the
+The homepage, [`index.html`](index.html), opens **The Safe Haven Paradox** with a
+compact introduction and the automatically computed historical finding. It charts both the
 modified-duration proxy and official 10-year ACM term premium across the available
 multi-year history, alongside a GLD adjusted-price index. On initial load it
 automatically selects the **largest absolute six-calendar-month ACM change** among
@@ -11,6 +12,29 @@ selection. Exact source endpoint dates, the premium change in bps, GLD return in
 percent, and a descriptive conclusion appear without interaction. Start/end
 selectors let visitors recompute the finding; the shaded window and all three
 charts follow that selection. Chart-history presets retain the selected window.
+
+Navigation order: **Bond–Gold Puzzle** (`index.html`) → **Gold Study** (`gold.html`)
+→ **Allocation Lab** (`portfolio.html`). The original Gold Study is preserved in
+`gold.html`. Old `bonds.html` links redirect to the homepage, retaining query strings
+and section anchors when JavaScript is enabled.
+
+For a quick local preview, the committed JSON files are enough; no data download
+or dependency installation is needed:
+
+```powershell
+cd C:\Duke\Study\Fintech534\534_lab
+& "C:\msys64\mingw64\bin\python.exe" -m http.server 8000 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8000/` for research, `/gold.html` for Gold Study, and
+`/portfolio.html` for Allocation Lab. Stop with **Ctrl+C**. Use **Ctrl+F5** after
+CSS changes. Opening the HTML directly with `file://` will not reliably load JSON.
+If `python` is correctly configured on your machine, `python -m http.server 8000`
+also works. The explicit path above avoids the broken Windows Store alias in the
+current terminal environment.
+The preview uses the dated local files; GitHub Actions continues to refresh online
+data automatically after deployment. The commands below are for an optional local
+data refresh and calculation tests, rather than a prerequisite for viewing the site.
 
 The existing GitHub Pages workflow is retained. Its only additions are the bond
 refresh command and inclusion of the two bond JSON artifacts in the data commit;
@@ -27,7 +51,7 @@ node test_bonds_page.js
 python -m http.server 8000
 ```
 
-Visit `http://localhost:8000/bonds.html`. For Actions, run the existing **Refresh
+Visit `http://localhost:8000/`. For Actions, run the existing **Refresh
 market data & deploy** workflow; it refreshes market prices before bond alignment.
 
 ### Bond data contract and source validation

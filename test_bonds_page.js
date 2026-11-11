@@ -11,7 +11,7 @@ class Element {
   querySelectorAll() { return this.children; }
   addEventListener(k, fn) { this.listeners[k] = fn; }
 }
-const html = fs.readFileSync('bonds.html', 'utf8');
+const html = fs.readFileSync('index.html', 'utf8');
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'HTML IDs must be unique');
 for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {

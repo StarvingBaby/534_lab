@@ -155,6 +155,44 @@ body {
   font-size: 12px;
 }
 
+/* The research landing page puts the computed finding before the long timeline. */
+.research-home {
+  padding-top: 32px;
+}
+
+.research-home > .site-hero {
+  margin-bottom: 20px;
+}
+
+.research-home .site-hero h1 {
+  font-size: clamp(30px, 4vw, 48px);
+  margin: 12px 0;
+  letter-spacing: -.045em;
+}
+
+.research-home .research-stamp {
+  margin: 10px 0 0;
+  color: var(--site-muted);
+  font-size: 12px;
+}
+
+.research-home .finding {
+  padding: 24px;
+}
+
+.research-home .metrics {
+  padding: 18px 0;
+  margin: 18px 0;
+}
+
+.finding-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+}
+
 @media (max-width: 700px) {
   .site-container {
     width: calc(100% - 40px);
@@ -183,6 +221,14 @@ body {
 
   .site-main {
     padding-top: 36px;
+  }
+
+  .research-home {
+    padding-top: 24px;
+  }
+
+  .research-home .finding {
+    padding: 20px;
   }
 
   .site-main > .site-hero {
