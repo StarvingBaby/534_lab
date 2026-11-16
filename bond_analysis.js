@@ -30,7 +30,18 @@
     });
     return rows;
   }
-  const api = { metrics, discover, validate, number };
+  function windowByMonths(rows, startMonth, endMonth) {
+    const start = rows.findIndex(r => r.month === startMonth);
+    const end = rows.findIndex(r => r.month === endMonth);
+    const months = number(endMonth) - number(startMonth);
+    if (start < 0 || end <= start || end - start !== months ||
+        !rows.slice(start, end).every((r, k) => number(rows[start + k + 1].month) - number(r.month) === 1)) return null;
+    return { start, end, months, ...metrics(rows[start], rows[end]) };
+  }
+  function goldDescription(returnPct) {
+    return Math.abs(returnPct) < 1 ? 'was nearly flat' : returnPct > 0 ? 'rose' : 'fell';
+  }
+  const api = { metrics, discover, validate, number, windowByMonths, goldDescription };
   if (typeof module !== 'undefined') module.exports = api;
   else root.BondAnalysis = api;
 })(typeof window === 'undefined' ? globalThis : window);

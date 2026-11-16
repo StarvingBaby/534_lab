@@ -13,6 +13,17 @@ percent, and a descriptive conclusion appear without interaction. Start/end
 selectors let visitors recompute the finding; the shaded window and all three
 charts follow that selection. Chart-history presets retain the selected window.
 
+The finding uses “nearly flat” for an absolute GLD endpoint return below 1%.
+This is a descriptive convention, not a statistical test or a claim about
+intrawindow volatility. **What Surprised Us?** shows the computed April–October
+and October–December 2023 case study, with actual ACM/GLD dates and six-month
+versus two-month lengths. Buttons select either window; the follow-up is called
+a reversal only when the computed ACM changes have opposite signs. Missing
+endpoints or intervening months disable that window. Case-study dates do not
+replace the data-driven initial-window selection rule. Duration is identified
+as a hypothetical fresh par-bond proxy, with same-shock sensitivity rather
+than realized bond performance. History buttons are disabled for unavailable spans.
+
 Navigation order: **Bond–Gold Puzzle** (`index.html`) → **Gold Study** (`gold.html`)
 → **Allocation Lab** (`portfolio.html`). The original Gold Study is preserved in
 `gold.html`. Old `bonds.html` links redirect to the homepage, retaining query strings
@@ -48,6 +59,7 @@ python fetch_bond_data.py
 python -m unittest -v test_bonds
 node test_bond_analysis.js
 node test_bonds_page.js
+node test_market_months.js
 python -m http.server 8000
 ```
 
@@ -89,14 +101,22 @@ Missing annual feeds or insufficient overlap fail without publishing partial dat
 parsed successfully before the FRED request timed out. The Treasury fallback was
 checked live locally: its 2024 XML parsed 250 observations, from 2024-01-02 (3.95%)
 through 2024-12-31 (4.58%). These are source-validation examples, not fixed inputs
-to the site. The first complete successful Actions refresh and public-page review
-remain required. The Excel engine is explicitly `calamine` via `python-calamine`,
+to the site. The generated `bond_data.json` now records a successful full refresh;
+the page displays its actual retrieval and observation dates. The Excel engine is
+explicitly `calamine` via `python-calamine`,
 avoiding the deprecated xlrd reader.
 
 Only completed calendar months common to all three sources are retained. Last
 available observations are used without filling missing months; actual source
 dates remain visible because they can differ within a month. The existing roughly
 six-year GLD history bounds the shared history. Current partial months are excluded.
+
+Gold Study and Allocation Lab also use completed months only. The Python export
+excludes the refresh month; `market_months.js` guards both frontends against
+older cached partial months. A row must precede both the UTC visit month and
+the source retrieval month. Thus an unfinished month in an old export does not
+become a full month simply because a visitor opens it later. Return, regression,
+volatility, Sharpe and allocation statistics all use the resulting price history.
 
 Duration models a fresh 10-year par Treasury each month: face 100, 20 semiannual
 cash flows, annual coupon equal to the selected 10-year yield / 100. Discount at `1 + y/2`, compute

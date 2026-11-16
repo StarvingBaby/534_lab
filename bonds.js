@@ -3,6 +3,7 @@
   'use strict';
   const $ = id => document.getElementById(id), A = window.BondAnalysis;
   let rows = [], visible = [], discovered, charts = [], years = 0, yieldName = 'FRED DGS10';
+  let originalWindow = null, followupWindow = null;
   const signed = (v, decimals = 2) => `${v > 0 ? '+' : ''}${v.toFixed(decimals)}`;
   const fixed = (v, n = 2) => v.toFixed(n);
   const selected = () => [Number($('start').value), Number($('end').value)];
@@ -69,6 +70,31 @@
     $('bondValue').textContent = (10000 * (1 + change / 100)).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
     $('shockResult').textContent = `${signed(change)}% estimated price change · ${fixed(r.modified_duration_years, 3)} years duration · ${r.treasury_yield_date}`;
   }
+  function prepareComparison() {
+    originalWindow = A.windowByMonths(rows, '2023-04', '2023-10');
+    followupWindow = A.windowByMonths(rows, '2023-10', '2023-12');
+    $('comparisonRows').replaceChildren();
+    for (const [window, requested] of [[originalWindow, '2023-04 to 2023-10'], [followupWindow, '2023-10 to 2023-12']]) {
+      const row = document.createElement('tr');
+      const cells = window ? [
+        `ACM ${rows[window.start].acm_date} → ${rows[window.end].acm_date}; GLD ${rows[window.start].gld_price_date} → ${rows[window.end].gld_price_date}`,
+        `${window.months} months`, `${signed(window.bps)} bps`, `${signed(window.gold)}%`
+      ] : [`Requested: ${requested}`, 'Insufficient aligned observations', '—', '—'];
+      cells.forEach((value, i) => {
+        const cell = document.createElement(i ? 'td' : 'th');
+        if (!i) cell.setAttribute('scope', 'row');
+        cell.textContent = value; row.append(cell);
+      });
+      $('comparisonRows').append(row);
+    }
+    $('compareOriginal').disabled = !originalWindow;
+    $('compareReversal').disabled = !followupWindow;
+    const reversed = originalWindow && followupWindow && originalWindow.bps * followupWindow.bps < 0;
+    $('compareReversal').textContent = reversed ? 'Compare the Reversal →' : 'Compare the Follow-up →';
+    $('comparisonNote').textContent = originalWindow && followupWindow
+      ? `The follow-up ACM change ${reversed ? 'reverses' : 'does not reverse'} the first window’s direction. Buttons update the main finding, shaded chart window and shock experiment below.`
+      : 'At least one case-study window lacks consecutive aligned months; unavailable windows cannot be selected.';
+  }
   function render() {
     const [i, j] = selected();
     if (i >= j) { $('windowError').textContent = 'Select an end month after the start month. The previous valid finding remains below.'; return; }
@@ -80,9 +106,14 @@
     $('goldReturn').textContent = `${signed(m.gold)}%`;
     $('durationChange').textContent = `${fixed(a.modified_duration_years)} → ${fixed(b.modified_duration_years)} yr`;
     const verb = n => n > 0 ? 'rose' : n < 0 ? 'fell' : 'was unchanged';
-    $('findingTitle').textContent = `Term premium ${verb(m.bps)}; GLD ${verb(m.gold)}.`;
+    $('findingTitle').textContent = `Term premium ${verb(m.bps)} (${signed(m.bps)} bps); GLD ${A.goldDescription(m.gold)} (${signed(m.gold)}%).`;
     $('findingText').textContent = `From ${a.acm_date} to ${b.acm_date}, the NY Fed’s 10-year ACM term-premium estimate changed by ${signed(m.bps)} basis points (from ${fixed(a.acm_term_premium_pct, 3)}% to ${fixed(b.acm_term_premium_pct, 3)}%). Over the corresponding month-end GLD pricing dates, ${a.gld_price_date} to ${b.gld_price_date}, the GLD ETF returned ${signed(m.gold)}% using adjusted closes of $${fixed(a.gld_adjusted_close_usd)} and $${fixed(b.gld_adjusted_close_usd)}. The fresh 10-year par-bond duration proxy changed from ${fixed(a.modified_duration_years, 3)} to ${fixed(b.modified_duration_years, 3)} years, using yields observed on ${a.treasury_yield_date} and ${b.treasury_yield_date}. This is an observed association within this window, not evidence of causation or a reliable hedge.`;
     $('selectionNote').textContent = initial ? `Automatically selected: the largest absolute ACM change among ${discovered.count} consecutive six-calendar-month windows in the available aligned history. GLD returns do not influence selection. A retrospective extreme is illustrative and may not represent typical behavior.` : 'User-selected endpoints. Values are recomputed from the same aligned monthly observations; GLD prices and bond observations can have different dates within a month.';
+    $('surpriseText').textContent = `From ${a.acm_date} to ${b.acm_date}, estimated long-term risk compensation ${verb(m.bps)} by ${fixed(Math.abs(m.bps))} bps, while GLD ${A.goldDescription(m.gold)} (${signed(m.gold)}% between ${a.gld_price_date} and ${b.gld_price_date}). This describes the endpoints, not the path of prices within the window.`;
+    $('durationInterpretation').textContent = `Proxy duration changed from ${fixed(a.modified_duration_years, 3)} to ${fixed(b.modified_duration_years, 3)} years. For the same hypothetical +100 bps parallel yield shock, first-order price sensitivity changes from ${signed(-a.modified_duration_years)}% to ${signed(-b.modified_duration_years)}%. This compares fresh par-bond models, not the realized return on a bond held through the window; term premium and duration measure different things.`;
+    for (const [id, window] of [['compareOriginal', originalWindow], ['compareReversal', followupWindow]]) {
+      $(id).setAttribute('aria-pressed', String(Boolean(window && i === window.start && j === window.end)));
+    }
     const endNumber = A.number(rows.at(-1).month), cutoff = years ? endNumber - years * 12 : -Infinity;
     visible = rows.filter(r => A.number(r.month) >= Math.min(cutoff, A.number(a.month)));
     charts = [];
@@ -109,6 +140,13 @@
       });
       $('start').value = discovered.start; $('end').value = discovered.end;
       document.querySelectorAll('button,select,input').forEach(el => el.disabled = false);
+      document.querySelectorAll('[data-years]').forEach(button => {
+        const requested = Number(button.dataset.years);
+        const span = A.number(rows.at(-1).month) - A.number(rows[0].month);
+        button.disabled = requested > 0 && span < requested * 12;
+        button.title = button.disabled ? `Unavailable: only ${fixed(span / 12, 1)} years of aligned history` : '';
+      });
+      prepareComparison();
       $('dataStamp').textContent = `Range ${rows[0].month}–${rows.at(-1).month} · Data through: ${rows.at(-1).acm_date} · Retrieved ${(data.generated_at || 'unknown').slice(0, 10)}`;
       $('provenance').textContent = `Bond retrieval: ${data.generated_at || 'unknown'}. GLD retrieval: ${data.sources?.gold?.fetched_at || 'unknown'}. Latest ACM: ${rows.at(-1).acm_date}; ${yieldName}: ${rows.at(-1).treasury_yield_date}; GLD: ${rows.at(-1).gld_price_date}. ${data.sources?.yield?.fallback_reason ? 'FRED was unavailable; this refresh uses the official Treasury feed throughout. ' : ''}Ingestion validates source fields before publication.`;
       const age = Date.now() - Date.parse(rows.at(-1).acm_date);
@@ -126,12 +164,21 @@
       $('dataStamp').textContent = 'No verified aligned dataset available';
       $('findingTitle').textContent = 'Insufficient aligned observations';
       $('findingText').textContent = 'No historical claim can be computed until the official bond sources and adjusted GLD prices are available. No estimated or synthetic market values are substituted.';
+      $('surpriseText').textContent = 'Insufficient aligned observations to interpret this window.';
+      $('comparisonNote').textContent = 'Verified data is unavailable; no comparison is computed.';
     }
   }
   ['start', 'end'].forEach(id => $(id).addEventListener('change', render));
   $('shock').addEventListener('input', shock);
   $('inspect').addEventListener('input', () => inspect(Number($('inspect').value)));
   $('reset').addEventListener('click', () => { $('start').value = discovered.start; $('end').value = discovered.end; render(); });
+  function selectComparison(window) {
+    if (!window) return;
+    $('start').value = window.start; $('end').value = window.end;
+    render();
+  }
+  $('compareOriginal').addEventListener('click', () => selectComparison(originalWindow));
+  $('compareReversal').addEventListener('click', () => selectComparison(followupWindow));
   document.querySelectorAll('[data-years]').forEach(button => button.addEventListener('click', () => {
     years = Number(button.dataset.years);
     document.querySelectorAll('[data-years]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));

@@ -8,10 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="bonds.css?v=20261111-home1">
-  <link rel="stylesheet" href="site.css?v=20261111-home1">
-  <script defer src="bond_analysis.js"></script>
-  <script defer src="bonds.js"></script>
+  <link rel="stylesheet" href="bonds.css?v=20261116-polish1">
+  <link rel="stylesheet" href="site.css?v=20261116-polish1">
+  <script defer src="bond_analysis.js?v=20261116-polish1"></script>
+  <script defer src="bonds.js?v=20261116-polish1"></script>
 </head>
 <body>
   <header class="site-header">
@@ -45,13 +45,29 @@
       <div class="finding-actions"><a class="cta" href="#evidence">Explore the evidence ↓</a><a class="small-link" href="#methodology">Sources, alignment &amp; limitations ↗</a></div>
     </section>
 
+    <section class="comparison" aria-labelledby="surpriseTitle">
+      <p class="eyebrow">WHAT SURPRISED US?</p>
+      <h2 id="surpriseTitle">A large premium move. A different gold response?</h2>
+      <p id="surpriseText" aria-live="polite">The selected window’s interpretation will appear after verified data loads.</p>
+      <p class="muted">“Nearly flat” means an absolute start-to-end GLD return below 1%. This is a descriptive label, not a statistical significance test; prices may still have fluctuated within the window.</p>
+      <h3>2023 case study · repricing and follow-up</h3>
+      <div class="comparison-scroll" role="region" aria-label="Historical window comparison" tabindex="0"><table>
+        <caption>Two historical windows, computed from the same monthly dataset</caption>
+        <thead><tr><th scope="col">Actual ACM / GLD dates</th><th scope="col">Length</th><th scope="col">Δ 10Y ACM premium</th><th scope="col">GLD return</th></tr></thead>
+        <tbody id="comparisonRows"></tbody>
+      </table></div>
+      <p id="comparisonNote" class="muted" role="status">Checking both windows for complete aligned observations…</p>
+      <div class="finding-actions"><button id="compareOriginal" disabled>View April–October</button><button id="compareReversal" disabled>Compare the Reversal →</button></div>
+      <p class="muted">These windows are chosen retrospectively to examine 2023, independently of the automatic initial-window rule. Six-month and two-month holding-period returns are not equal-horizon comparisons. Two examples cannot establish causality or a reliable hedge.</p>
+    </section>
+
     <section id="evidence" aria-labelledby="evidenceTitle">
       <div class="section-top"><div><p class="eyebrow">01 / THE BOND–GOLD TIMELINE</p><h2 id="evidenceTitle">A premium for uncertainty.</h2></div><div class="ranges" aria-label="Chart history"><button data-years="3" disabled>3Y</button><button data-years="5" disabled>5Y</button><button data-years="10" disabled>10Y</button><button data-years="0" aria-pressed="true" disabled>All</button></div></div>
       <p class="muted">Both bond series are always visible. The shaded window supports the finding above; changing chart history keeps the selected endpoints in view.</p>
       <div class="controls"><label>Window start<select id="start" disabled></select></label><span aria-hidden="true">→</span><label>Window end<select id="end" disabled></select></label><button id="reset" disabled>Restore discovered window</button></div>
       <p id="windowError" role="alert"></p>
       <div class="charts" id="charts">
-        <div class="chart-head"><h3>10-year par Treasury · modified duration proxy</h3><span class="mint">Years</span></div>
+        <div class="chart-head"><h3>Hypothetical 10Y par Treasury · modified duration proxy</h3><span class="mint">Years · model, not an observed CUSIP</span></div>
         <div id="durationChart" class="chart" role="img" aria-label="Historical monthly modified duration proxy, in years"></div>
         <div class="chart-head"><h3>NY Fed ACM · 10-year term premium</h3><span class="violet">Percent annualized · model estimate</span></div>
         <div id="premiumChart" class="chart" role="img" aria-label="Historical monthly ten-year ACM term premium, in percent"></div>
@@ -62,6 +78,7 @@
         <p id="historyRange" class="muted"></p>
       </div>
       <p class="notice">The duration series models a fresh 10-year par bond each month. Changes reflect yields under fixed maturity assumptions, rather than the aging of a single Treasury security.</p>
+      <p id="durationInterpretation" class="notice">Modified duration measures sensitivity to the same yield shock. A higher term premium does not necessarily imply a higher modified duration.</p>
     </section>
 
     <section class="experiment" aria-labelledby="shockTitle"><div><p class="eyebrow">02 / THE DURATION EXPERIMENT</p><h2 id="shockTitle">A rate move has a price.</h2><p class="muted">Apply a parallel yield shock to the proxy at your selected window’s end. This sensitivity estimate ignores convexity.</p><label for="shock">Yield shock: <output id="shockLabel">+100 bps</output></label><input id="shock" type="range" min="-200" max="200" step="5" value="100" disabled><div class="slider-labels"><span>−200 bps</span><span>+200 bps</span></div></div><div class="shock-result"><p>Hypothetical $10,000 bond</p><strong id="bondValue">—</strong><p id="shockResult">Waiting for verified duration.</p><code>ΔP/P ≈ −D<sub>mod</sub> × Δy</code><p class="muted">First-order estimate, not a realized investment return.</p></div></section>

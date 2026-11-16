@@ -6,14 +6,13 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pandas as pd
-import yfinance as yf
-
 OUT = Path(__file__).with_name('data.json')
 SYMBOLS = ('SPY', 'GLD')
 
 
 def get_adjusted_daily(symbol):
+    import pandas as pd
+    import yfinance as yf
     df = yf.download(symbol, period='6y', interval='1d', auto_adjust=True,
                      progress=False, threads=False, multi_level_index=False, timeout=25)
     if df is None or df.empty or 'Close' not in df.columns:
@@ -25,8 +24,16 @@ def get_adjusted_daily(symbol):
     return series
 
 
+def completed_records(records, as_of):
+    """Exclude the refresh month; its latest daily price is still only MTD."""
+    cutoff = as_of.strftime('%Y-%m')
+    return [r for r in records if r['date'][:7] < cutoff]
+
+
 def main():
     try:
+        import pandas as pd
+        now = datetime.now(timezone.utc)
         prices = pd.concat({s: get_adjusted_daily(s) for s in SYMBOLS}, axis=1).dropna()
         # Align month-end on the *same trading day* shared by both ETFs.
         month_keys = prices.index.to_period('M')
@@ -39,13 +46,14 @@ def main():
             for dt, row in monthly.iterrows()
             if all(math.isfinite(float(row[s])) and float(row[s]) > 0 for s in SYMBOLS)
         ]
+        records = completed_records(records, now)
         if len(records) < 61:
             raise RuntimeError('Too few valid price observations')
         payload = {
             'source': 'Yahoo Finance via yfinance',
             'price_type': 'Adjusted closing prices (auto_adjust=True)',
-            'frequency': 'Monthly last common trading date',
-            'fetched_at': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+            'frequency': 'Completed months only; last common SPY/GLD trading date',
+            'fetched_at': now.isoformat(timespec='seconds'),
             'symbols': {'spy': 'SPY - SPDR S&P 500 ETF Trust',
                         'gld': 'GLD - SPDR Gold Shares'},
             'prices': records,

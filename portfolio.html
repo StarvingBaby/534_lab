@@ -11,6 +11,7 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js" defer></script>
+  <script src="market_months.js?v=20261116-polish1" defer></script>
   <style>
     :root {
       --bg: #101815;
@@ -513,7 +514,7 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="site.css?v=20261111-home1">
+  <link rel="stylesheet" href="site.css?v=20261116-polish1">
 </head>
 
 <body>
@@ -626,7 +627,7 @@
       }
       function setWeight(w) { weight = Math.max(0, Math.min(1, w)); $('weight').value = Math.round(weight * 100); render(); }
       $('weight').addEventListener('input', e => setWeight(Number(e.target.value) / 100)); $('riskFree').addEventListener('input', render); document.querySelectorAll('[data-months]').forEach(b => b.addEventListener('click', () => { months = Number(b.dataset.months); document.querySelectorAll('[data-months]').forEach(x => x.classList.toggle('active', x === b)); render(); })); $('reset').addEventListener('click', () => setWeight(.5)); $('optimal').addEventListener('click', () => { if (!ready) return; const t = prices.slice(-(months + 1)), rows = t.slice(1).map((p, i) => ({ spy: p.spy / t[i].spy - 1, gld: p.gld / t[i].gld - 1 })), rf = Number($('riskFree').value) / 100; if (!Number.isFinite(rf)) return; const all = Array.from({ length: 101 }, (_, i) => ({ w: i / 100, ...calc(i / 100, rows, rf) })).filter(x => Number.isFinite(x.sh)); if (all.length) setWeight(all.reduce((a, b) => a.sh > b.sh ? a : b).w); });
-      async function load() { try { if (typeof Chart === 'undefined') throw Error('Chart.js unavailable. Check your internet connection.'); const res = await fetch('./data.json', { cache: 'no-store' }); if (!res.ok) throw Error('data.json not found. Run the GitHub Actions workflow to fetch the real market prices.'); const j = await res.json(); if (!Array.isArray(j.prices)) throw Error('Unexpected data structure.'); prices = j.prices.filter(p => typeof p.date === 'string' && Number.isFinite(p.spy) && Number.isFinite(p.gld) && p.spy > 0 && p.gld > 0).sort((a, b) => a.date.localeCompare(b.date)); if (prices.length < 61) throw Error('Need 61+ verified aligned monthly closes; received ' + prices.length + '.'); ready = true; $('weight').disabled = false; $('optimal').disabled = false; $('reset').disabled = false; $('loading').style.display = 'none'; $('dataStamp').textContent = 'Through ' + prices.at(-1).date + ' · Refreshed ' + (j.fetched_at || 'unknown').slice(0, 10); render(); } catch (e) { $('loading').querySelector('.pulse').style.display = 'none'; $('loadingText').textContent = e.message; console.error(e); } } window.addEventListener('load', load);
+      async function load() { try { if (typeof Chart === 'undefined') throw Error('Chart.js unavailable. Check your internet connection.'); const res = await fetch('./data.json', { cache: 'no-store' }); if (!res.ok) throw Error('data.json not found. Run the GitHub Actions workflow to fetch the real market prices.'); const j = await res.json(); if (!Array.isArray(j.prices)) throw Error('Unexpected data structure.'); prices = MarketMonths.completedPrices(j.prices, j.fetched_at).filter(p => typeof p.date === 'string' && Number.isFinite(p.spy) && Number.isFinite(p.gld) && p.spy > 0 && p.gld > 0).sort((a, b) => a.date.localeCompare(b.date)); if (prices.length < 61) throw Error('Need 61+ verified aligned monthly closes; received ' + prices.length + '.'); ready = true; $('weight').disabled = false; $('optimal').disabled = false; $('reset').disabled = false; $('loading').style.display = 'none'; $('dataStamp').textContent = 'Completed months through ' + prices.at(-1).date + ' · Refreshed ' + (j.fetched_at || 'unknown').slice(0, 10); render(); } catch (e) { $('loading').querySelector('.pulse').style.display = 'none'; $('loadingText').textContent = e.message; console.error(e); } } window.addEventListener('load', load);
     })();
   </script>
 </body>

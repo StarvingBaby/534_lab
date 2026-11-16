@@ -39,6 +39,8 @@ async function boot(payload, ok = true, refreshOK = true) {
       acm_term_premium_pct: i * i / 100, treasury_10y_yield_pct: 4, modified_duration_years: 8, gld_adjusted_close_usd: 200 + i};
   });
   const {elements: el, presets} = await boot({observations: rows, generated_at: '2025-02-01', sources: {gold: {fetched_at: '2025-02-01'}}});
+  assert.equal(presets.find(p => p.dataset.years === '10').disabled, true);
+  assert.equal(presets.find(p => p.dataset.years === '5').disabled, false);
   // No click: the initial finding, source dates and charts must already exist.
   assert.equal(el.start.value, 54);
   assert.equal(el.tpChange.textContent, '+684.00 bps');
@@ -54,7 +56,7 @@ async function boot(payload, ok = true, refreshOK = true) {
   assert.equal(el.tpChange.textContent, '+400.00 bps');
   assert.equal(el.goldReturn.textContent, '+10.00%');
   assert.match(el.findingLabel.textContent, /YOUR SELECTED/);
-  for (const preset of presets) { preset.listeners.click(); assert.ok(el.durationChart.children.length); }
+  for (const preset of presets.filter(p => !p.disabled)) { preset.listeners.click(); assert.ok(el.durationChart.children.length); }
   el.shock.value = '-100'; el.shock.listeners.input();
   assert.equal(el.bondValue.textContent, '$10,800');
   el.reset.listeners.click(); assert.equal(el.start.value, 54);
@@ -68,5 +70,25 @@ async function boot(payload, ok = true, refreshOK = true) {
   assert.match(fallback.elements.readout.textContent, /U.S. Treasury daily 10-year par yield/);
   assert.doesNotMatch(fallback.elements.readout.textContent, /DGS10/);
   assert.match(fallback.elements.provenance.textContent, /official Treasury feed throughout/);
+  const cachedData = JSON.parse(fs.readFileSync('bond_data.json', 'utf8'));
+  const comparison = await boot(cachedData);
+  const controls = comparison.elements;
+  assert.match(controls.findingTitle.textContent, /nearly flat/);
+  assert.match(controls.surpriseText.textContent, /not the path/);
+  assert.equal(controls.comparisonRows.children.length, 2);
+  assert.equal(controls.comparisonRows.children[0].children[1].textContent, '6 months');
+  assert.equal(controls.comparisonRows.children[1].children[1].textContent, '2 months');
+  assert.equal(controls.compareReversal.disabled, false);
+  controls.compareReversal.listeners.click();
+  assert.equal(cachedData.observations[controls.start.value].month, '2023-10');
+  assert.equal(cachedData.observations[controls.end.value].month, '2023-12');
+  assert.match(controls.tpChange.textContent, /^-/);
+  assert.match(controls.goldReturn.textContent, /^\+/);
+  assert.match(controls.durationInterpretation.textContent, /not the realized return/);
+  controls.compareOriginal.listeners.click();
+  assert.equal(cachedData.observations[controls.start.value].month, '2023-04');
+  const missingCase = await boot({...cachedData, observations: cachedData.observations.filter(r => r.month !== '2023-12')});
+  assert.equal(missingCase.elements.compareReversal.disabled, true);
+  assert.match(missingCase.elements.comparisonNote.textContent, /lacks consecutive/);
   console.log('Actual page controller passed: automatic finding, exact dates, charts, selectors, history presets, shocks, reset, unavailable and cached-error states.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -124,6 +124,42 @@ h3 {
   background:linear-gradient(120deg,#413a2440,var(--panel));
   padding:32px;
 }
+.comparison {
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--panel);
+  padding:24px;
+}
+.comparison h3 {
+  margin-top:24px;
+}
+.comparison-scroll {
+  overflow-x:auto;
+  margin-top:14px;
+}
+.comparison table {
+  width:100%;
+  border-collapse:collapse;
+  text-align:left;
+  font-size:13px;
+}
+.comparison caption {
+  text-align:left;
+  color:var(--muted);
+  padding-bottom:12px;
+}
+.comparison th,.comparison td {
+  border-bottom:1px solid var(--line);
+  padding:14px 12px;
+  vertical-align:top;
+}
+.comparison th {
+  font-weight:500;
+}
+.comparison td {
+  color:var(--gold);
+  white-space:nowrap;
+}
 .section-top {
   display:flex;
   justify-content:space-between;
@@ -173,6 +209,7 @@ h3 {
 .ranges {
   display:flex;
   gap:6px;
+  flex-wrap:wrap;
 }
 .controls {
   display:flex;

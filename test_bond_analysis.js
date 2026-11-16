@@ -18,4 +18,14 @@ for (const bad of [null, NaN, '4']) {
 assert.throws(() => A.validate(rows.map((r, i) => i === 5 ? {...r, gld_price_date: '2020-02-31'} : r)), /Invalid/);
 assert.throws(() => A.validate(rows.map((r, i) => i === 5 ? {...r, month: rows[4].month} : r)), /Invalid/);
 assert.throws(() => A.discover(rows.filter((_, i) => i % 5 !== 0)), /Insufficient/);
+const first = A.windowByMonths(rows, '2023-04', '2023-10');
+assert.equal(first.months, 6);
+assert.ok(Math.abs(first.bps - 504) < 1e-10);
+assert.equal(A.windowByMonths(rows, '2023-10', '2023-12').months, 2);
+assert.equal(A.windowByMonths(rows, '2019-04', '2023-10'), null);
+assert.equal(A.windowByMonths(rows.filter(r => r.month !== '2023-06'), '2023-04', '2023-10'), null);
+assert.equal(A.goldDescription(-.38), 'was nearly flat');
+assert.equal(A.goldDescription(.99), 'was nearly flat');
+assert.equal(A.goldDescription(1), 'rose');
+assert.equal(A.goldDescription(-1), 'fell');
 console.log('Frontend data validation, discovery, dates, gaps, bps and GLD returns passed.');

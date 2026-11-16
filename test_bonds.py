@@ -9,10 +9,17 @@ from unittest.mock import patch, MagicMock
 from urllib.error import HTTPError, URLError
 
 import fetch_bond_data as fetcher
+from fetch_data import completed_records
 from bond_math import align, discover_window, monthly_last, par_bond, window_metrics
 
 
 class BondsTests(unittest.TestCase):
+    def test_market_export_excludes_partial_month(self):
+        rows = [{'date': '2025-12-31'}, {'date': '2026-01-30'}, {'date': '2026-02-10'}]
+        self.assertEqual(completed_records(rows, date(2026, 2, 28)), rows[:2])
+        self.assertEqual(completed_records(rows, date(2026, 1, 1)), rows[:1])
+        self.assertEqual(completed_records(rows, date(2026, 3, 1)), rows)
+
     def test_download_retries_timeout_then_succeeds(self):
         response = MagicMock()
         response.__enter__.return_value.read.return_value = b'verified response'
