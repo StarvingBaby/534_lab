@@ -7,25 +7,28 @@ on:
     - cron: '25 23 * * 1-5'
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  refresh-and-deploy:
+  refresh-and-upload:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      artifact_id: ${{ steps.pages_upload.outputs.artifact_id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
+        with:
+          # A rerun must not attempt to push data on top of an old event SHA.
+          ref: main
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -35,7 +38,16 @@ jobs:
       - name: Refresh Treasury and term-premium evidence
         run: python fetch_bond_data.py
       - name: Commit refreshed data
+        id: data_commit
+        # The current refresh is still deployable if persisting its cache fails.
+        continue-on-error: true
+        shell: bash
         run: |
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "::warning::main advanced during refresh; skipping the data commit to preserve newer changes. The refreshed files will still be uploaded."
+            exit 0
+          fi
           if ! git diff --quiet -- data.json bond_data.json bond_refresh_status.json || [ -n "$(git ls-files --others --exclude-standard data.json bond_data.json bond_refresh_status.json)" ]; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -43,12 +55,44 @@ jobs:
             git commit -m 'Update market prices and bond research evidence'
             git push
           fi
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+      - name: Report data commit warning
+        if: steps.data_commit.outcome == 'failure'
+        run: echo "::warning::Refreshed data could not be committed. Deploying the current refreshed files; see the Commit refreshed data log for the Git error."
       - name: Upload static site
-        uses: actions/upload-pages-artifact@v3
+        id: pages_upload
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
+          name: github-pages
           path: '.'
+          include-hidden-files: true
+          retention-days: 7
+      - name: Verify uploaded Pages artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_ARTIFACT_ID: ${{ steps.pages_upload.outputs.artifact_id }}
+        run: python scripts/verify_pages_artifact.py
+
+  deploy:
+    needs: refresh-and-upload
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Report artifact handoff
+        env:
+          ARTIFACT_ID: ${{ needs.refresh-and-upload.outputs.artifact_id }}
+        run: |
+          test -n "$ARTIFACT_ID"
+          echo "Deploying github-pages artifact ID $ARTIFACT_ID from workflow run $GITHUB_RUN_ID"
+      - name: Configure Pages
+        uses: actions/configure-pages@v6.0.0
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5.0.1
+        with:
+          artifact_name: github-pages

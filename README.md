@@ -137,6 +137,32 @@ A gold-themed, animated, one-page financial experiment comparing SPY and GLD thr
 
 ## Publishing to GitHub Pages
 
+The single workflow now has two dependent jobs: **refresh-and-upload** refreshes
+data and uploads a named `github-pages` artifact; **deploy** starts only after the
+upload has been verified against GitHub's artifact API. The upload ID is carried
+as a job output and printed at the handoff. Both actions use explicit matching
+artifact names; artifacts are retained for seven days. Official Actions are pinned
+to current release versions that support the Node 24 runner transition.
+
+The data-commit step is best effort: it checks out current `main`, skips its commit
+if `main` advanced during refresh, and reports a warning if a Git operation fails.
+The freshly generated files can still be deployed even when their cache cannot
+be pushed back to the repository. Source-fetch failures retain the existing data
+rules described above; missing/invalid data is not bypassed by this change.
+
+If deployment reports `No artifacts named github-pages`, inspect **Upload static
+site** for its artifact ID and **Verify uploaded Pages artifact** for visibility,
+expiration, or API permission errors. Verification retries transient failures,
+but stops on missing IDs, duplicate names, or authorization errors. A successful
+verification is not itself proof of successful Pages deployment: the **deploy**
+job must finish successfully and return its page URL.
+
+After changing the workflow, commit and push it to `main` to start a **new run**.
+Re-running an older failed run uses that run's older workflow revision. For a
+manual retry of the new workflow, use **Run workflow** on `main`; if re-running
+its jobs, choose **Re-run all jobs** to create a fresh artifact. Offline verifier
+tests: `python -m unittest -v test_pages_artifact`.
+
 1. Put **all** files from this folder in the root of a **public** GitHub repository (including the hidden `.github/workflows/update.yml` directory). Use the `main` branch.
 2. In **Settings → Pages → Build and deployment**, select **GitHub Actions**.
 3. In **Actions**, run **Refresh market data & deploy** using **Run workflow** (or push to `main`). The workflow fetches adjusted market data, commits `data.json`, and deploys the site.
